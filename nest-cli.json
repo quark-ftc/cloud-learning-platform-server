@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/cloud-learning-platform-server/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/cloud-learning-platform-server/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/cloud-learning-platform-server",
+  "projects": {
+    "cloud-learning-platform-server": {
+      "type": "application",
+      "root": "apps/cloud-learning-platform-server",
+      "entryFile": "main",
+      "sourceRoot": "apps/cloud-learning-platform-server/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/cloud-learning-platform-server/tsconfig.app.json"
+      }
+    },
+    "app-bff": {
+      "type": "application",
+      "root": "apps/app-bff",
+      "entryFile": "main",
+      "sourceRoot": "apps/app-bff/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/app-bff/tsconfig.app.json"
+      }
+    },
+    "backstage-bff": {
+      "type": "application",
+      "root": "apps/backstage-bff",
+      "entryFile": "main",
+      "sourceRoot": "apps/backstage-bff/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/backstage-bff/tsconfig.app.json"
+      }
+    },
+    "prisma": {
+      "type": "library",
+      "root": "libs/prisma",
+      "entryFile": "index",
+      "sourceRoot": "libs/prisma/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/prisma/tsconfig.lib.json"
+      }
+    },
+    "microservices-user": {
+      "type": "application",
+      "root": "apps/microservices-user",
+      "entryFile": "main",
+      "sourceRoot": "apps/microservices-user/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/microservices-user/tsconfig.app.json"
+      }
+    }
+  }
+}
