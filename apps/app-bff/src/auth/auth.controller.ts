@@ -5,7 +5,7 @@ import { UserRegisterDto } from '../../../../public/dto/user/user-register.dto';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
 
-@Controller('/user')
+@Controller('/auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,

@@ -30,9 +30,8 @@ export class AuthService {
             this.microserviceUserClient.send('post', userRegisterDto),
           );
           return {
-            status: 'success',
+            state: 'success',
             message: '注册成功',
-            data: {},
           };
         } catch (error) {
           throw error;
