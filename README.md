@@ -21,4 +21,4 @@
 
 | 微服务名称 | 依赖注入名称           | 端口号 |
 | ---------- | ---------------------- |---|
-| user       | microservicesUserClient | 30000  |
+| user       | microserviceUserClient | 30000  |
