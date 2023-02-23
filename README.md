@@ -19,6 +19,7 @@
 
 ### 微服务
 
-| 微服务名称 | 依赖注入名称           | 端口号 |
-| ---------- | ---------------------- |---|
-| user       | microserviceUserClient | 30000  |
+| 微服务名称        | 依赖注入名称           | 端口号 |
+| ----------------- | ---------------------- | ------ |
+| microservice-user | microserviceUserClient | 30000  |
+| microservice-role | microserviceRoleClient | 30001  |

@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `menu` ALTER COLUMN `pid` DROP DEFAULT;

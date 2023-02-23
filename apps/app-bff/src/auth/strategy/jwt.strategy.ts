@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { User } from '@prisma/client';
+import { use } from 'passport';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwtStrategy') {
@@ -25,7 +26,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwtStrategy') {
         this.microserviceUserClient.send('get:username', payload.username),
       );
       if (user) {
-        return delete user.password;
+        delete user.password;
+        return user;
       }
     } catch (error) {
       console.log(error.message);

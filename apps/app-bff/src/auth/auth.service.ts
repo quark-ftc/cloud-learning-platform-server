@@ -25,26 +25,22 @@ export class AuthService {
       );
       if (!user) {
         userRegisterDto.password = await hash(userRegisterDto.password);
-        try {
-          firstValueFrom(
-            this.microserviceUserClient.send('post', userRegisterDto),
-          );
-          return {
-            state: 'success',
-            message: '注册成功',
-          };
-        } catch (error) {
-          throw error;
-        }
+        await firstValueFrom(
+          this.microserviceUserClient.send('post', userRegisterDto),
+        );
+        return {
+          status: 'success',
+          message: '注册成功',
+        };
       } else {
         return {
-          state: 'failure',
+          status: 'failure',
           message: '注册失败，用户以存在',
         };
       }
     } catch (error) {
       return {
-        state: 'failure',
+        status: 'failure',
         message: `注册失败：${error.message}`,
       };
     }
@@ -52,22 +48,24 @@ export class AuthService {
 
   async login(userLoginDto: UserLoginDto) {
     try {
+      console.log(userLoginDto);
       const user = await firstValueFrom<Promise<User>>(
         this.microserviceUserClient.send('get:username', userLoginDto.username),
       );
+      console.log(user);
       if (!user) {
         return {
-          state: 'failure',
-          message: '登陆是吧，用户不存在',
+          status: 'failure',
+          message: '登陆失败，用户不存在',
         };
       } else if (!(await verify(user.password, userLoginDto.password))) {
         return {
-          state: 'failure',
+          status: 'failure',
           message: '登陆失败，密码错误',
         };
       } else {
         return {
-          state: 'success',
+          status: 'success',
           message: '登陆成功',
           data: {
             token: await this.jwtService.signAsync({

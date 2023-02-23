@@ -20,20 +20,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
       },
     }),
   ],
-  providers: [
-    AuthService,
-    {
-      provide: 'microserviceUserClient',
-      useFactory: (configService: ConfigService) => {
-        const clientOption = configService.get(
-          'microservice.microserviceUserClient',
-        );
-        return ClientProxyFactory.create(clientOption);
-      },
-      inject: [ConfigService],
-    },
-    JwtStrategy,
-  ],
+  providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}

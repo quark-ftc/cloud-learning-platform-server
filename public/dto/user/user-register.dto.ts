@@ -6,4 +6,6 @@ export class UserRegisterDto {
   password: string;
   @IsOptional()
   role: string;
+  @IsOptional()
+  adminSecretKey: string;
 }

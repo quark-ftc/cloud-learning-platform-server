@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common';
 import { MicroserviceUserController } from './microservice-user.controller';
-import { MicroserviceUserService } from './microservice-user.service';
-import { GlobalConfigModule } from '@app/global-config';
-import { PrismaService } from '../../../libs/prisma/src/prisma.service';
-
+// import { PrismaService } from '../../../libs/prisma/src/prisma.service';
+import { PrismaModule } from '../../../libs/prisma/src/prisma.module';
 @Module({
-  imports: [GlobalConfigModule],
+  imports: [PrismaModule],
   controllers: [MicroserviceUserController],
-  providers: [MicroserviceUserService, PrismaService],
+  providers: [],
 })
 export class MicroserviceUserModule {}

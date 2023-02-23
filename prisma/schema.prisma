@@ -11,13 +11,94 @@ datasource db {
 }
 
 model User {
-  userId   String  @id @default(uuid()) @map("user_id")
-  username String  @unique
+  userId   String       @id @default(uuid()) @map("user_id")
+  username String       @unique
   password String
-  role     String?
+  email    String?
+  nickname String?
+  avatar   String?
+  age      String?
+  school   String?
+  createAt DateTime     @default(now()) @map("create_at")
+  updateAt DateTime     @default(now()) @updatedAt @map("update_at")
+  roles    RoleToUser[]
+  teacher  Teacher?
+  student  Student?
+
+  @@map("user")
 }
 
 model Role {
-  roleId Int @id @default(autoincrement()) @map("role_id")
-  roleName String @map("role_name")
+  roleId      String       @id @default(uuid()) @map("role_id")
+  roleName    String       @unique @map("role_name")
+  description String?
+  createAt    DateTime     @default(now()) @map("create_at")
+  updateAt    DateTime     @default(now()) @updatedAt @map("update_at")
+  users       RoleToUser[]
+  menus       MenuToRole[]
+
+  @@map("role")
+}
+
+model Menu {
+  menuId      Int          @id @default(autoincrement()) @map("menu_id")
+  pid         Int?
+  parentMenu  Menu?        @relation("MenuTree", fields: [pid], references: [menuId])
+  childMenu   Menu[]       @relation("MenuTree")
+  menuTitle   String       @unique @map("menu_title")
+  path        String?      @unique
+  menuIcon    String?      @map("menu_icon")
+  description String?
+  createAt    DateTime     @default(now()) @map("create_at")
+  updateAt    DateTime     @default(now()) @map("update_at")
+  roles       MenuToRole[]
+
+  @@map("menu")
+}
+
+model Teacher {
+  teacherId String @id @default(uuid()) @map("teacher_id")
+  username  String @unique
+  user      User   @relation(fields: [username], references: [username])
+}
+
+model Student {
+  studentID String @id @default(uuid()) @map("student_id")
+  username  String @unique
+  user      User   @relation(fields: [username], references: [username])
+}
+
+model RoleToUser {
+  roleName String   @map("role_name")
+  username String   @map("username")
+  role     Role     @relation(fields: [roleName], references: [roleName])
+  user     User     @relation(fields: [username], references: [username])
+  createAt DateTime @default(now()) @map("create_at")
+  updateAt DateTime @default(now()) @updatedAt @map("update_at")
+
+  @@id([username, roleName])
+  @@map("role_to_user")
+}
+
+model MenuToRole {
+  menuTitle String   @map("title")
+  roleName  String   @map("role_name")
+  menu      Menu     @relation(fields: [menuTitle], references: [menuTitle])
+  role      Role     @relation(fields: [roleName], references: [roleName])
+  createAt  DateTime @default(now()) @map("create_at")
+  updateAt  DateTime @default(now()) @updatedAt @map("update_at")
+
+  @@id([menuTitle, roleName])
+  @@map("menu_to_role")
+}
+
+model Course {
+  courseID          Int     @id @default(autoincrement()) @map("course_id")
+  courseName        String  @unique @map("course_name")
+  courseDescription String? @map("course_Description")
+  courseCover       String  @map("course_cover")
+  courseVideo       String  @map("course_video")
+  coursePrice       String  @map("course_price")
+  courseGrade       String  @map("course_grade")
+  courseState       Boolean @default(true) @map("course_state")
 }

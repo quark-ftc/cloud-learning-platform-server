@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
-import { BackstateBffModule } from './backstate-bff.module';
+import { BackstageBffModule } from './backstage-bff.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(BackstateBffModule);
+  const app = await NestFactory.create(BackstageBffModule);
   app.enableCors({ origin: true }); //跨域支持
   await app.listen(3001);
   console.log(

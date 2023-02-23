@@ -1,5 +1,5 @@
 export class MicroserviceCommunicationInterface {
-  state: 'success' | 'failure';
+  status: 'success' | 'failure';
   message: string;
   data?: any;
 }

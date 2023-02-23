@@ -41,6 +41,12 @@
       ],
       "@app/user/*": [
         "libs/user/src/*"
+      ],
+      "@app/register-microservice": [
+        "libs/register-microservice/src"
+      ],
+      "@app/register-microservice/*": [
+        "libs/register-microservice/src/*"
       ]
     }
   }

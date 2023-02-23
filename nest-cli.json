@@ -46,13 +46,22 @@
         "tsConfigPath": "apps/microservice-user/tsconfig.app.json"
       }
     },
-    "global-config": {
-      "type": "library",
-      "root": "libs/global-config",
-      "entryFile": "index",
-      "sourceRoot": "libs/global-config/src",
+    "microservice-role": {
+      "type": "application",
+      "root": "apps/microservice-role",
+      "entryFile": "main",
+      "sourceRoot": "apps/microservice-role/src",
       "compilerOptions": {
-        "tsConfigPath": "libs/global-config/tsconfig.lib.json"
+        "tsConfigPath": "apps/microservice-role/tsconfig.app.json"
+      }
+    },
+    "register-microservice": {
+      "type": "library",
+      "root": "libs/register-microservice",
+      "entryFile": "index",
+      "sourceRoot": "libs/register-microservice/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/register-microservice/tsconfig.lib.json"
       }
     }
   }
