@@ -171,4 +171,25 @@ export class AuthService {
       };
     }
   }
+  //获取用户的分页数据
+  async getUserPagingList(page: number, take: number) {
+    const pagingList = await firstValueFrom(
+      this.microserviceUserClient.send('user-paging-list', {
+        skip: page * take,
+        take,
+      }),
+    ).catch((error) => {
+      return Promise.resolve(error.message);
+    });
+    const userCount = await firstValueFrom(
+      this.microserviceUserClient.send('get-user-count', ''),
+    ).catch((error) => {
+      return Promise.resolve(error.message);
+    });
+    console.log(userCount);
+    return {
+      list: pagingList,
+      total: userCount,
+    };
+  }
 }

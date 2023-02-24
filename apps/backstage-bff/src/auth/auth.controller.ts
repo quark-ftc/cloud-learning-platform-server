@@ -10,6 +10,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { UserLoginDto } from 'public/dto/user/user-login.dto';
 import { UserRegisterDto } from 'public/dto/user/user-register.dto';
 import { AuthService } from './auth.service';
+import { GetUserPagingListDto } from 'public/dto/user/get-user-paging-list.dto';
 
 @Controller('/auth')
 export class AuthController {
@@ -126,5 +127,30 @@ export class AuthController {
   async getMenu(@Request() payload: any) {
     const user = payload.user;
     return await this.authService.getMenu(user.username);
+  }
+  @Post('user-paging-list')
+  async getUserPagingList(@Body() getUserPagingListDto: GetUserPagingListDto) {
+    const pagingData = await this.authService
+      .getUserPagingList(
+        +getUserPagingListDto.page, //TODO 改用管道
+        +getUserPagingListDto.size,
+      )
+      .catch((error) => {
+        return {
+          status: 'failure',
+          message: `获取分页数据失败:${error.message}`,
+        };
+      });
+    console.log(pagingData);
+    return {
+      status: 'success',
+      message: '获取分页数据成功',
+      data: {
+        size: +getUserPagingListDto.size,
+        page: +getUserPagingListDto.page,
+        list: pagingData.list,
+        total: pagingData.total,
+      },
+    };
   }
 }

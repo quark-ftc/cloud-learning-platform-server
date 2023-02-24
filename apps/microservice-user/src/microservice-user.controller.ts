@@ -93,4 +93,21 @@ export class MicroserviceUserController {
       return Promise.reject(`创建账户失败：${error.message}`);
     }
   }
+  //根据分页信息获取数据
+  @MessagePattern('user-paging-list')
+  async getUserPagingList(pagingInfo) {
+    console.log('-------------------------');
+    console.log(pagingInfo.skip);
+    console.log(pagingInfo.list);
+    console.log('------------------------');
+    return await this.prismaClient.user.findMany({
+      skip: pagingInfo.skip,
+      take: pagingInfo.take,
+    });
+  }
+
+  @MessagePattern('get-user-count')
+  async getUserCount() {
+    return await this.prismaClient.user.count();
+  }
 }
