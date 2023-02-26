@@ -172,7 +172,8 @@ export class AuthService {
     }
   }
   //获取用户的分页数据
-  async getUserPagingList(page: number, take: number) {
+  //TODO: 这里的返回类型暂且写Promise<any>,以避免类型错误
+  async getUserPagingList(page: number, take: number): Promise<any> {
     const pagingList = await firstValueFrom(
       this.microserviceUserClient.send('user-paging-list', {
         skip: page * take,
