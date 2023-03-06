@@ -79,4 +79,11 @@ export class AuthService {
       throw new UnauthorizedException(error.message);
     }
   }
+
+  async getUserRolesByUsername(username: string) {
+    const roleList = await firstValueFrom(
+      this.microserviceUserClient.send('get:username:role', username),
+    );
+    return roleList;
+  }
 }

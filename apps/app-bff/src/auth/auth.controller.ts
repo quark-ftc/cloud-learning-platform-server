@@ -11,6 +11,7 @@ import { UserLoginDto } from 'public/dto/user/user-login.dto';
 import { UserRegisterDto } from '../../../../public/dto/user/user-register.dto';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
+import { userInfo } from 'os';
 
 @Controller('/auth')
 export class AuthController {
@@ -43,12 +44,28 @@ export class AuthController {
   @UseGuards(AuthGuard('jwtStrategy'))
   @Get('user-info')
   async userInfo(@Request() payload: any) {
-    return {
-      status: 'success',
-      message: '获取用户信息成功',
-      data: {
-        userInfo: payload.user,
-      },
-    };
+    try {
+      const rolesList = await this.authService.getUserRolesByUsername(
+        payload.user.username,
+      );
+      console.log(rolesList);
+      const roles = rolesList.map((item) => {
+        return item.roleName;
+      });
+      const userInfo = payload.user;
+      userInfo.roles = roles;
+      return {
+        status: 'success',
+        message: '获取用户信息成功',
+        data: {
+          userInfo,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 'failure',
+        message: `获取用户信息失败：${error.message}}`,
+      };
+    }
   }
 }
