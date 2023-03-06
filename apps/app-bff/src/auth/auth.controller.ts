@@ -1,4 +1,11 @@
-import { Body, Controller, Post, UseGuards, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+  Request,
+  Get,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UserLoginDto } from 'public/dto/user/user-login.dto';
 import { UserRegisterDto } from '../../../../public/dto/user/user-register.dto';
@@ -14,6 +21,9 @@ export class AuthController {
 
   @Post('/register')
   async register(@Body() userRegisterDto: UserRegisterDto) {
+    if (!userRegisterDto.role) {
+      userRegisterDto.role = '学生';
+    }
     const result = await this.authService.register(userRegisterDto);
     return result;
   }
@@ -28,5 +38,17 @@ export class AuthController {
   @Post('/test')
   get() {
     return '登陆成功';
+  }
+
+  @UseGuards(AuthGuard('jwtStrategy'))
+  @Get('user-info')
+  async userInfo(@Request() payload: any) {
+    return {
+      status: 'success',
+      message: '获取用户信息成功',
+      data: {
+        userInfo: payload.user,
+      },
+    };
   }
 }
