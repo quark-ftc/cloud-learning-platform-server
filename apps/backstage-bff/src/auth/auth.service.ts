@@ -7,6 +7,7 @@ import { UserLoginDto } from 'public/dto/user/user-login.dto';
 import { UserRegisterDto } from 'public/dto/user/user-register.dto';
 import { firstValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
+import { use } from 'passport';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +23,7 @@ export class AuthService {
   //用户注册
   async register(userRegisterDto: UserRegisterDto) {
     if (
-      userRegisterDto.role === 'admin' &&
+      userRegisterDto.role === '管理员' &&
       userRegisterDto.adminSecretKey != this.configService.get('ADMIN_SECRET')
     ) {
       return {
@@ -192,5 +193,20 @@ export class AuthService {
       list: pagingList,
       total: userCount,
     };
+  }
+
+  //更新用户信息
+  async updateUserInfo(username: string, attribute: string, newValue: string) {
+    const userInfo = await firstValueFrom(
+      this.microserviceUserClient.send('update-user-info', {
+        username,
+        attribute,
+        newValue,
+      }),
+    ).catch((error) => {
+      console.log(error.message);
+    });
+    delete userInfo.password;
+    return userInfo;
   }
 }

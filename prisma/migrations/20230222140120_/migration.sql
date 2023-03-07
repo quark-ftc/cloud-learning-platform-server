@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE `menu` MODIFY `pid` INTEGER NOT NULL DEFAULT 0;

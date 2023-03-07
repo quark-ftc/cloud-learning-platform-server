@@ -35,11 +35,17 @@ async function main() {
     },
   });
 
-  await prismaClient.roleToUser.create({
-    data: {
-      roleName: '学生',
-      username: '18205172759',
-    },
+  await prismaClient.roleToUser.createMany({
+    data: [
+      {
+        roleName: '学生',
+        username: '18205172759',
+      },
+      {
+        roleName: '教师',
+        username: '18205172759',
+      },
+    ],
   });
 
   await prismaClient.menu.createMany({

@@ -4,6 +4,7 @@ import { AppBffService } from './app-bff.service';
 import { AuthModule } from './auth/auth.module';
 import { RegisterMicroserviceModule } from '../../../libs/register-microservice/src/register-microservice.module';
 import { ConfigModule } from '@nestjs/config';
+import { ClassModule } from './class/class.module';
 @Module({
   imports: [
     AuthModule,
@@ -11,6 +12,7 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ClassModule,
   ],
   controllers: [AppBffController],
   providers: [AppBffService],

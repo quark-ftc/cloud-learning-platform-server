@@ -63,6 +63,42 @@
       "compilerOptions": {
         "tsConfigPath": "libs/register-microservice/tsconfig.lib.json"
       }
+    },
+    "upload-file": {
+      "type": "library",
+      "root": "libs/upload-file",
+      "entryFile": "index",
+      "sourceRoot": "libs/upload-file/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/upload-file/tsconfig.lib.json"
+      }
+    },
+    "course": {
+      "type": "library",
+      "root": "libs/course",
+      "entryFile": "index",
+      "sourceRoot": "libs/course/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/course/tsconfig.lib.json"
+      }
+    },
+    "microservice-course": {
+      "type": "application",
+      "root": "apps/microservice-course",
+      "entryFile": "main",
+      "sourceRoot": "apps/microservice-course/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/microservice-course/tsconfig.app.json"
+      }
+    },
+    "microservice-class": {
+      "type": "application",
+      "root": "apps/microservice-class",
+      "entryFile": "main",
+      "sourceRoot": "apps/microservice-class/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/microservice-class/tsconfig.app.json"
+      }
     }
   }
 }

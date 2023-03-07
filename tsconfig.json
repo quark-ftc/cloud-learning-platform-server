@@ -47,6 +47,18 @@
       ],
       "@app/register-microservice/*": [
         "libs/register-microservice/src/*"
+      ],
+      "@app/upload-file": [
+        "libs/upload-file/src"
+      ],
+      "@app/upload-file/*": [
+        "libs/upload-file/src/*"
+      ],
+      "@app/course": [
+        "libs/course/src"
+      ],
+      "@app/course/*": [
+        "libs/course/src/*"
       ]
     }
   }

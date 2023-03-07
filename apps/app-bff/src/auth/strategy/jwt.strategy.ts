@@ -26,6 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwtStrategy') {
         this.microserviceUserClient.send('get:username', payload.username),
       );
       if (user) {
+        console.log(user);
         delete user.password;
         return user;
       }

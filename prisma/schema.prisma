@@ -16,9 +16,11 @@ model User {
   password String
   email    String?
   nickname String?
+  realName String?      @map("real_name")
   avatar   String?
   age      String?
   school   String?
+  address  String?
   createAt DateTime     @default(now()) @map("create_at")
   updateAt DateTime     @default(now()) @updatedAt @map("update_at")
   roles    RoleToUser[]
@@ -26,6 +28,24 @@ model User {
   student  Student?
 
   @@map("user")
+}
+
+model Teacher {
+  teacherId String  @id @default(uuid()) @map("teacher_id")
+  username  String  @unique
+  user      User    @relation(fields: [username], references: [username])
+  classes   Class[]
+
+  @@map("teacher")
+}
+
+model Student {
+  studentId String           @id @default(uuid()) @map("student_id")
+  username  String           @unique
+  user      User             @relation(fields: [username], references: [username])
+  classes   ClassToStudent[]
+
+  @@map("student")
 }
 
 model Role {
@@ -56,18 +76,6 @@ model Menu {
   @@map("menu")
 }
 
-model Teacher {
-  teacherId String @id @default(uuid()) @map("teacher_id")
-  username  String @unique
-  user      User   @relation(fields: [username], references: [username])
-}
-
-model Student {
-  studentID String @id @default(uuid()) @map("student_id")
-  username  String @unique
-  user      User   @relation(fields: [username], references: [username])
-}
-
 model RoleToUser {
   roleName String   @map("role_name")
   username String   @map("username")
@@ -93,7 +101,7 @@ model MenuToRole {
 }
 
 model Course {
-  courseID          Int     @id @default(autoincrement()) @map("course_id")
+  courseId          String  @id @default(uuid()) @map("course_id")
   courseName        String  @unique @map("course_name")
   courseDescription String? @map("course_Description")
   courseCover       String  @map("course_cover")
@@ -101,4 +109,25 @@ model Course {
   coursePrice       String  @map("course_price")
   courseGrade       String  @map("course_grade")
   courseState       Boolean @default(true) @map("course_state")
+
+  @@map("course")
+}
+
+model Class {
+  classId          String           @id @default(uuid()) @map("class_id")
+  createdTeacher   String           @default(uuid()) @map("created_teacher")
+  teacher          Teacher          @relation(fields: [createdTeacher], references: [username])
+  className        String           @unique //班级名称
+  classNumber      Int              @unique @default(autoincrement()) @map("class_number")
+  classDescription String?          @map("class_description")
+  students         ClassToStudent[]
+}
+
+model ClassToStudent {
+  studentId String
+  student   Student @relation(fields: [studentId], references: [studentId])
+  classId   String
+  class     Class   @relation(fields: [classId], references: [classId])
+
+  @@id([classId, studentId])
 }

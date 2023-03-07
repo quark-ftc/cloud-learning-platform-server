@@ -4,6 +4,7 @@ import { MessagePattern } from '@nestjs/microservices';
 import { rejects } from 'assert';
 import passport from 'passport';
 import { UserRegisterDto } from 'public/dto/user/user-register.dto';
+import { userInfo } from 'os';
 
 @Controller()
 export class MicroserviceUserController {
@@ -22,7 +23,7 @@ export class MicroserviceUserController {
       },
     });
   }
-  //根据用户名查找账户
+  //根据用户名查找用户信息
   @MessagePattern('get:username')
   async findByUsername(username: string) {
     return await this.prismaClient.user.findUnique({
@@ -106,8 +107,26 @@ export class MicroserviceUserController {
     });
   }
 
+  //查询总用户数量
   @MessagePattern('get-user-count')
   async getUserCount() {
     return await this.prismaClient.user.count();
+  }
+
+  @MessagePattern('update-user-info')
+  async UpdateUserInfo(updateData: {
+    username: string;
+    attribute: string;
+    newValue: string;
+  }) {
+    await this.prismaClient.user.update({
+      where: {
+        username: updateData.username,
+      },
+      data: {
+        [updateData.attribute]: updateData.newValue,
+      },
+    });
+    return await this.findByUsername(updateData.username);
   }
 }

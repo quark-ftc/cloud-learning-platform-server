@@ -11,7 +11,6 @@ import { UserLoginDto } from 'public/dto/user/user-login.dto';
 import { UserRegisterDto } from '../../../../public/dto/user/user-register.dto';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
-import { userInfo } from 'os';
 
 @Controller('/auth')
 export class AuthController {
