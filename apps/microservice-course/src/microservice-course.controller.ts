@@ -1,8 +1,7 @@
-import { Controller, Get, Inject } from '@nestjs/common';
-import { MessagePattern, ClientProxy } from '@nestjs/microservices';
-import { UploadFileService } from '../../../libs/upload-file/src/upload-file.service';
+import { Controller } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { buffer } from 'stream/consumers';
+import { MessagePattern } from '@nestjs/microservices';
+import { UploadFileService } from '../../../libs/upload-file/src/upload-file.service';
 
 @Controller()
 export class MicroserviceCourseController {
@@ -11,10 +10,10 @@ export class MicroserviceCourseController {
     private readonly configService: ConfigService,
   ) {}
   @MessagePattern('upload-course-video')
-  async uploadCourseVideo(courseVideo) {
+  async uploadCourseVideo(folder: string, key: string, courseVideo) {
     // console.log(courseVideo.buffer.data);
     const { Location } = await this.uploadFileService
-      .upload('course', 'aaaa.png', Buffer.from(courseVideo.buffer.data))
+      .upload(folder, key, Buffer.from(courseVideo.buffer.data))
       .catch((error) => {
         console.log(error.message);
       });

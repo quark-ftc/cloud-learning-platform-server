@@ -1,8 +1,7 @@
-import { Module } from '@nestjs/common';
-import { MicroserviceCourseController } from './microservice-course.controller';
 import { UploadFileModule } from '@app/upload-file';
+import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { RegisterMicroserviceModule } from '@app/register-microservice';
+import { MicroserviceCourseController } from './microservice-course.controller';
 
 @Module({
   imports: [UploadFileModule],

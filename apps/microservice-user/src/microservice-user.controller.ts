@@ -1,14 +1,16 @@
 import { PrismaService } from '@app/prisma';
 import { Controller } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
-import { rejects } from 'assert';
-import passport from 'passport';
 import { UserRegisterDto } from 'public/dto/user/user-register.dto';
-import { userInfo } from 'os';
+import { UploadFileService } from '../../../libs/upload-file/src/upload-file.service';
+import e from 'express';
 
 @Controller()
 export class MicroserviceUserController {
-  constructor(private readonly prismaClient: PrismaService) {}
+  constructor(
+    private readonly prismaClient: PrismaService,
+    private readonly uploadFileService: UploadFileService,
+  ) {}
   //查找所有用户
   @MessagePattern('get')
   async findAll() {
@@ -114,7 +116,7 @@ export class MicroserviceUserController {
   }
 
   @MessagePattern('update-user-info')
-  async UpdateUserInfo(updateData: {
+  async updateUserInfo(updateData: {
     username: string;
     attribute: string;
     newValue: string;
@@ -128,5 +130,22 @@ export class MicroserviceUserController {
       },
     });
     return await this.findByUsername(updateData.username);
+  }
+  @MessagePattern('upload-avatar')
+  async uploadAvatar(uploadInfo: { directory: string; key: string; avatar }) {
+    const { Location } = await this.uploadFileService.upload(
+      uploadInfo.directory,
+      uploadInfo.key,
+      Buffer.from(uploadInfo.avatar.buffer.data),
+    );
+    console.log(Location);
+    return Location;
+  }
+
+  @MessagePattern('delete-avatar')
+  async deleteAvatar(key: string) {
+    const responseData = await this.uploadFileService.delete(key);
+    console.log(responseData);
+    return responseData;
   }
 }

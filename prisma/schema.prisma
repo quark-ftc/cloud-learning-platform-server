@@ -17,7 +17,6 @@ model User {
   email    String?
   nickname String?
   realName String?      @map("real_name")
-  avatar   String?
   age      String?
   school   String?
   address  String?

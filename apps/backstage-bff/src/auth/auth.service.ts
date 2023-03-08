@@ -7,7 +7,6 @@ import { UserLoginDto } from 'public/dto/user/user-login.dto';
 import { UserRegisterDto } from 'public/dto/user/user-register.dto';
 import { firstValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
-import { use } from 'passport';
 
 @Injectable()
 export class AuthService {
@@ -208,5 +207,22 @@ export class AuthService {
     });
     delete userInfo.password;
     return userInfo;
+  }
+  //上传用户头像
+  async uploadUserAvatar(directory: string, key: string, avatar) {
+    const url = await firstValueFrom(
+      this.microserviceUserClient.send('upload-avatar', {
+        directory,
+        key,
+        avatar,
+      }),
+    );
+    return url;
+  }
+  //删除用户头像
+  async deleteUserAvatar(key: string) {
+    return await firstValueFrom(
+      this.microserviceUserClient.send('delete-avatar', key),
+    );
   }
 }

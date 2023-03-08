@@ -1,23 +1,24 @@
 import {
   Body,
   Controller,
-  Post,
-  UseGuards,
   Get,
+  Post,
   Request,
-  Patch,
-  Param,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { GetUserPagingListDto } from 'public/dto/user/get-user-paging-list.dto';
+import { UpdateUserInfoDto } from 'public/dto/user/update-user-info.dto';
 import { UserLoginDto } from 'public/dto/user/user-login.dto';
 import { UserRegisterDto } from 'public/dto/user/user-register.dto';
 import { AuthService } from './auth.service';
-import { GetUserPagingListDto } from 'public/dto/user/get-user-paging-list.dto';
-import { UpdateUserInfoDto } from 'public/dto/user/update-user-info.dto';
+
 @Controller('/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
   @Post('/register')
   async register(@Body() userRegisterDto: UserRegisterDto) {
     const result = await this.authService.register(userRegisterDto);
@@ -130,6 +131,7 @@ export class AuthController {
     const user = payload.user;
     return await this.authService.getMenu(user.username);
   }
+
   @UseGuards(AuthGuard('jwtStrategy'))
   @Post('user-paging-list')
   async getUserPagingList(@Body() getUserPagingListDto: GetUserPagingListDto) {
@@ -177,6 +179,42 @@ export class AuthController {
         message: `已更新${upDateUserInfoDto.attribute}的值为${upDateUserInfoDto.value}`,
         data: {
           userInfo,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 'failure',
+        message: error.message,
+      };
+    }
+  }
+
+  @UseGuards(AuthGuard('jwtStrategy'))
+  @Post('update-avatar')
+  @UseInterceptors(FileInterceptor('avatar'))
+  async uploadUserAvatar(
+    @UploadedFile() avatar: Express.Multer.File,
+    @Request() { user },
+  ) {
+    try {
+      //在上传之前，先删掉已有的图片
+      const currentAvatar = user.avatar;
+      if (currentAvatar) {
+        const start = currentAvatar.indexOf('/');
+        const key = currentAvatar.slice(start, currentAvatar.length);
+        await this.authService.deleteUserAvatar(key); //删除成功或者文件不存在则返回204或200
+      }
+      const url = await this.authService.uploadUserAvatar(
+        'avatar',
+        +new Date() + '' + '-' + avatar.originalname,
+        avatar,
+      );
+      await this.authService.updateUserInfo(user.username, 'avatar', url);
+      return {
+        status: 'success',
+        message: '上传头像成功',
+        data: {
+          avatarUrl: url,
         },
       };
     } catch (error) {

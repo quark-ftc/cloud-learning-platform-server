@@ -13,15 +13,26 @@ export class UploadFileService {
     ChunkParallelLimit: 8, // 控制单个文件下分片上传并发数，在同园区上传可以设置较大的并发数
     ChunkSize: 1024 * 1024 * 8, // 控制分片大小，单位 B，在同园区上传可以设置较大的分片大小
   });
-  async upload(directory: string, key: string, body: Buffer) {
+  async upload(directory: string, key: string, file: Buffer) {
     return await this.cos.putObject({
       Bucket: this.configService.get('Bucket'),
       Region: this.configService.get('Region'),
       Key: directory + '/' + key,
-      Body: body,
+      Body: file,
       onProgress: function (progressData) {
         console.log(JSON.stringify(progressData));
       },
     });
+  }
+  async delete(key: string) {
+    const { statusCode } = await this.cos.deleteObject({
+      Bucket: this.configService.get('Bucket'),
+      Region: this.configService.get('Region'),
+      Key: key,
+      onProgress: function (progressData) {
+        console.log(JSON.stringify(progressData));
+      },
+    });
+    return statusCode; //如果删除成功或者文件不存在则返回204或200
   }
 }
