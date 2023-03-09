@@ -131,6 +131,7 @@ export class MicroserviceUserController {
     });
     return await this.findByUsername(updateData.username);
   }
+  //上传用户头像
   @MessagePattern('upload-avatar')
   async uploadAvatar(uploadInfo: { directory: string; key: string; avatar }) {
     const { Location } = await this.uploadFileService.upload(
@@ -138,8 +139,10 @@ export class MicroserviceUserController {
       uploadInfo.key,
       Buffer.from(uploadInfo.avatar.buffer.data),
     );
-    console.log(Location);
-    return Location;
+
+    const url = 'https://' + Location;
+    console.log(url);
+    return url;
   }
 
   @MessagePattern('delete-avatar')

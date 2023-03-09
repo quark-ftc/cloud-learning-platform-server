@@ -7,6 +7,7 @@ import { PrismaService } from '../../../libs/prisma/src/prisma.service';
 @Controller()
 export class MicroserviceClassController {
   constructor(private readonly prismaClient: PrismaService) {}
+  //创建班级
   @MessagePattern('create-class')
   async createClass(createClassInfo: {
     createdTeacher: string;
@@ -21,6 +22,14 @@ export class MicroserviceClassController {
           connect: { username: createClassInfo.createdTeacher },
         },
       },
+    });
+  }
+
+  //根据班级名称查找班级
+  @MessagePattern('get-class-by-class-name')
+  async getClassByClassName(className: string) {
+    return await this.prismaClient.class.findUnique({
+      where: { className },
     });
   }
 }

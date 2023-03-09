@@ -40,8 +40,19 @@ export class ClassController {
           message: '您不是教师，无权创建班级',
         };
       }
-      console.log(roleList);
-      // console.log(createClassDto);
+      const oneClass = await firstValueFrom(
+        this.microserviceClassClient.send(
+          'get-class-by-class-name',
+          createClassDto.className,
+        ),
+      );
+      console.log(oneClass);
+      if (oneClass) {
+        return {
+          status: 'failure',
+          message: '班级名称已经存在，班级名称应该唯一',
+        };
+      }
       const createdClass = await firstValueFrom(
         this.microserviceClassClient.send('create-class', {
           createdTeacher: username,
