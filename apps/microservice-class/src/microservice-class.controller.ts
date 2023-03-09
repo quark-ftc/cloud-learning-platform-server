@@ -32,4 +32,8 @@ export class MicroserviceClassController {
       where: { className },
     });
   }
+  @MessagePattern('get-all-class')
+  async getAllClass() {
+    return await this.prismaClient.class.findMany();
+  }
 }

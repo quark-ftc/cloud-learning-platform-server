@@ -73,4 +73,26 @@ export class ClassController {
       };
     }
   }
+  @UseGuards(AuthGuard('jwtStrategy'))
+  @Post('get-all-class')
+  async getAllClass() {
+    try {
+      const classList = await firstValueFrom(
+        this.microserviceClassClient.send('get-all-class', ''),
+      );
+      console.log(classList);
+      return {
+        status: 'success',
+        message: '获取班级列表成功',
+        data: {
+          classList,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 'failure',
+        message: `获取班级列表失败：${error.message}`,
+      };
+    }
+  }
 }

@@ -86,4 +86,61 @@ export class AuthService {
     );
     return roleList;
   }
+  async getAllStudent() {
+    try {
+      let studentList = await firstValueFrom(
+        this.microserviceUserClient.send('get-all-student', ''),
+      );
+      studentList = studentList.map((item) => {
+        Object.assign(item.user, item.user.student);
+        delete item.user.student;
+        Object.assign(item, item.user);
+        delete item.user;
+        return item;
+      });
+      console.log(studentList);
+      return {
+        status: 'success',
+        message: '查询所有学生成功',
+        data: {
+          studentList,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 'failure',
+        message: `查询所有用户失败${error.message}`,
+      };
+    }
+  }
+  async updateUserInfo(username: string, attribute: string, newValue: string) {
+    const userInfo = await firstValueFrom(
+      this.microserviceUserClient.send('update-user-info', {
+        username,
+        attribute,
+        newValue,
+      }),
+    ).catch((error) => {
+      console.log(error.message);
+    });
+    delete userInfo.password;
+    return userInfo;
+  }
+  //上传用户头像
+  async uploadUserAvatar(directory: string, key: string, avatar) {
+    const url = await firstValueFrom(
+      this.microserviceUserClient.send('upload-avatar', {
+        directory,
+        key,
+        avatar,
+      }),
+    );
+    return url;
+  }
+  //删除用户头像
+  async deleteUserAvatar(key: string) {
+    return await firstValueFrom(
+      this.microserviceUserClient.send('delete-avatar', key),
+    );
+  }
 }

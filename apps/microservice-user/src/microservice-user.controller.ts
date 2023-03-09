@@ -4,6 +4,7 @@ import { MessagePattern } from '@nestjs/microservices';
 import { UserRegisterDto } from 'public/dto/user/user-register.dto';
 import { UploadFileService } from '../../../libs/upload-file/src/upload-file.service';
 import e from 'express';
+import { RegisterMicroserviceModule } from '../../../libs/register-microservice/src/register-microservice.module';
 
 @Controller()
 export class MicroserviceUserController {
@@ -150,5 +151,30 @@ export class MicroserviceUserController {
     const responseData = await this.uploadFileService.delete(key);
     console.log(responseData);
     return responseData;
+  }
+
+  @MessagePattern('get-all-student')
+  async getAllStudent() {
+    return await this.prismaClient.student.findMany({
+      include: {
+        user: {
+          select: {
+            student: true,
+            address: true,
+            avatar: true,
+            email: true,
+            nickname: true,
+            createAt: true,
+            password: true,
+            realName: true,
+            age: true,
+            school: true,
+            userId: true,
+            username: true,
+            updateAt: true,
+          },
+        },
+      },
+    });
   }
 }

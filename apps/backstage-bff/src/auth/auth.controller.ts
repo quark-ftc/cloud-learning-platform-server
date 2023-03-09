@@ -132,7 +132,7 @@ export class AuthController {
     const user = payload.user;
     return await this.authService.getMenu(user.username);
   }
-
+  //获取用户分页数据
   @UseGuards(AuthGuard('jwtStrategy'))
   @Post('user-paging-list')
   async getUserPagingList(@Body() getUserPagingListDto: GetUserPagingListDto) {
@@ -160,6 +160,7 @@ export class AuthController {
     }
   }
 
+  //更新用户信息
   @UseGuards(AuthGuard('jwtStrategy'))
   @Post('update-user-info')
   async updateUserInfo(
@@ -190,6 +191,7 @@ export class AuthController {
     }
   }
 
+  //上传用户头像
   @UseGuards(AuthGuard('jwtStrategy'))
   @Post('update-avatar')
   @UseInterceptors(FileInterceptor('avatar'))
