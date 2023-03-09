@@ -15,6 +15,7 @@ import { UpdateUserInfoDto } from 'public/dto/user/update-user-info.dto';
 import { UserLoginDto } from 'public/dto/user/user-login.dto';
 import { UserRegisterDto } from 'public/dto/user/user-register.dto';
 import { AuthService } from './auth.service';
+import { generateFileUploadKey } from '../../../../public/util/generate-file-upload-key';
 
 @Controller('/auth')
 export class AuthController {
@@ -204,9 +205,10 @@ export class AuthController {
         const key = currentAvatar.slice(start, currentAvatar.length);
         await this.authService.deleteUserAvatar(key); //删除成功或者文件不存在则返回204或200
       }
+      const key = generateFileUploadKey(avatar.originalname);
       const url = await this.authService.uploadUserAvatar(
         'avatar',
-        +new Date() + '' + '-' + avatar.originalname,
+        key,
         avatar,
       );
       await this.authService.updateUserInfo(user.username, 'avatar', url);

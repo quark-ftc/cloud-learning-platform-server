@@ -6,8 +6,8 @@ CREATE TABLE `user` (
     `email` VARCHAR(191) NULL,
     `nickname` VARCHAR(191) NULL,
     `real_name` VARCHAR(191) NULL,
-    `avatar` VARCHAR(191) NULL,
     `age` VARCHAR(191) NULL,
+    `avatar` VARCHAR(191) NULL,
     `school` VARCHAR(191) NULL,
     `address` VARCHAR(191) NULL,
     `create_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -92,7 +92,7 @@ CREATE TABLE `course` (
     `course_video` VARCHAR(191) NOT NULL,
     `course_price` VARCHAR(191) NOT NULL,
     `course_grade` VARCHAR(191) NOT NULL,
-    `course_state` BOOLEAN NOT NULL DEFAULT true,
+    `course_state` VARCHAR(191) NOT NULL,
 
     UNIQUE INDEX `course_course_name_key`(`course_name`),
     PRIMARY KEY (`course_id`)
@@ -104,7 +104,7 @@ CREATE TABLE `Class` (
     `created_teacher` VARCHAR(191) NOT NULL,
     `className` VARCHAR(191) NOT NULL,
     `class_number` INTEGER NOT NULL AUTO_INCREMENT,
-    `classDescription` VARCHAR(191) NULL,
+    `class_description` VARCHAR(191) NULL,
 
     UNIQUE INDEX `Class_className_key`(`className`),
     UNIQUE INDEX `Class_class_number_key`(`class_number`),

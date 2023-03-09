@@ -18,6 +18,7 @@ model User {
   nickname String?
   realName String?      @map("real_name")
   age      String?
+  avatar   String?
   school   String?
   address  String?
   createAt DateTime     @default(now()) @map("create_at")
@@ -107,7 +108,7 @@ model Course {
   courseVideo       String  @map("course_video")
   coursePrice       String  @map("course_price")
   courseGrade       String  @map("course_grade")
-  courseState       Boolean @default(true) @map("course_state")
+  courseState       String  @map("course_state")
 
   @@map("course")
 }
