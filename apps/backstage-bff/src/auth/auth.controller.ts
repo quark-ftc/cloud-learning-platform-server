@@ -199,6 +199,7 @@ export class AuthController {
     @UploadedFile() avatar: Express.Multer.File,
     @Request() { user },
   ) {
+    console.log(avatar);
     try {
       //在上传之前，先删掉已有的图片
       const currentAvatar = user.avatar;

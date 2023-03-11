@@ -11,21 +11,23 @@ datasource db {
 }
 
 model User {
-  userId   String       @id @default(uuid()) @map("user_id")
-  username String       @unique
-  password String
-  email    String?
-  nickname String?
-  realName String?      @map("real_name")
-  age      String?
-  avatar   String?
-  school   String?
-  address  String?
-  createAt DateTime     @default(now()) @map("create_at")
-  updateAt DateTime     @default(now()) @updatedAt @map("update_at")
-  roles    RoleToUser[]
-  teacher  Teacher?
-  student  Student?
+  userId          String            @id @default(uuid()) @map("user_id")
+  username        String            @unique
+  password        String
+  email           String?
+  nickname        String?
+  realName        String?           @map("real_name")
+  age             String?
+  avatar          String?
+  school          String?
+  address         String?
+  createAt        DateTime          @default(now()) @map("create_at")
+  updateAt        DateTime          @default(now()) @updatedAt @map("update_at")
+  shoppingCart    shoppingCart[]
+  purchasedCourse PurchasedCourse[]
+  roles           RoleToUser[]
+  teacher         Teacher?
+  student         Student?
 
   @@map("user")
 }
@@ -72,6 +74,7 @@ model Menu {
   createAt    DateTime     @default(now()) @map("create_at")
   updateAt    DateTime     @default(now()) @map("update_at")
   roles       MenuToRole[]
+  
 
   @@map("menu")
 }
@@ -101,16 +104,47 @@ model MenuToRole {
 }
 
 model Course {
-  courseId          String  @id @default(uuid()) @map("course_id")
-  courseName        String  @unique @map("course_name")
-  courseDescription String? @map("course_Description")
-  courseCover       String  @map("course_cover")
-  courseVideo       String  @map("course_video")
-  coursePrice       String  @map("course_price")
-  courseGrade       String  @map("course_grade")
-  courseState       String  @map("course_state")
+  courseId          String            @id @default(uuid()) @map("course_id")
+  courseName        String            @unique @map("course_name")
+  courseDescription String?           @map("course_Description")
+  courseCover       String            @map("course_cover")
+  courseVideo       String            @map("course_video")
+  coursePrice       String            @map("course_price")
+  courseGrade       String            @map("course_grade")
+  courseState       String            @map("course_state")
+  courseCategory    String?           @map("course_categore")
+  shoppingCart      shoppingCart[]
+  purchasedCourse   PurchasedCourse[]
+  createAt DateTime @default(now()) @map("create_at")
+  updateAt DateTime @default(now()) @updatedAt @map("update_at")
 
   @@map("course")
+}
+
+model shoppingCart {
+  orderId  String   @id @default(uuid()) @map("order_id")
+  username String
+  user     User     @relation(fields: [username], references: [username])
+  courseId String   @map("course_id")
+  course   Course   @relation(fields: [courseId], references: [courseId])
+  address  String
+  createAt DateTime @default(now()) @map("create_at")
+  updateAt DateTime @default(now()) @updatedAt @map("update_at")
+
+  @@unique([username, courseId], name: "usernameAndCourseId")
+  @@map("shopping_cart")
+}
+
+model PurchasedCourse {
+  purchasedCourseId String @id @default(uuid()) @map("purchased_course_id")
+  username          String
+  user              User   @relation(fields: [username], references: [username])
+  courseId          String @map("course_id")
+  course            Course @relation(fields: [courseId], references: [courseId])
+  createAt DateTime @default(now()) @map("create_at")
+  updateAt DateTime @default(now()) @updatedAt @map("update_at")
+  @@unique([username,courseId],name:"usernameAndCourseId")
+  @@map("purchased_course")
 }
 
 model Class {
@@ -121,6 +155,10 @@ model Class {
   classNumber      Int              @unique @default(autoincrement()) @map("class_number")
   classDescription String?          @map("class_description")
   students         ClassToStudent[]
+  createAt DateTime @default(now()) @map("create_at")
+  updateAt DateTime @default(now()) @updatedAt @map("update_at")
+
+  @@map("class")
 }
 
 model ClassToStudent {
@@ -128,6 +166,9 @@ model ClassToStudent {
   student   Student @relation(fields: [studentId], references: [studentId])
   classId   String
   class     Class   @relation(fields: [classId], references: [classId])
+  createAt DateTime @default(now()) @map("create_at")
+  updateAt DateTime @default(now()) @updatedAt @map("update_at")
 
   @@id([classId, studentId])
+  @@map("class_to_student")
 }
