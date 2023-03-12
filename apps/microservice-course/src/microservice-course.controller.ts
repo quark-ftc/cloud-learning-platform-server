@@ -208,7 +208,7 @@ export class MicroserviceCourseController {
       },
     });
   }
-  //查询所有已购课程
+  //查询所有已购课程(查询订单)
   @MessagePattern('get-all-purchased-course')
   async getAllPurchasedCourse(username: string) {
     let orderList = await this.prismaClient.purchasedCourse.findMany({
