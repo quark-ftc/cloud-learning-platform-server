@@ -22,11 +22,17 @@ export class CourseController {
   //获取全部的课程列表
   @UseGuards(AuthGuard('jwtStrategy'))
   @Post('get-course-list')
-  async getCourseList(@Request() { user: { username } }) {
+  async getCourseList(@Request() { user: { username } }, @Body() { category }) {
     try {
       let courseList = await firstValueFrom(
         this.microserviceCourseClient.send('find-all-course', ''),
       );
+      if (category) {
+        console.log(category);
+        courseList = courseList.filter((item) => {
+          return item.courseCategory == category;
+        });
+      }
       let roleList = await firstValueFrom(
         this.microserviceUserClient.send('get:username:role', username),
       );
