@@ -43,7 +43,7 @@ export class CourseController {
       console.log(roleList);
       /**
        * 如果用户没有管理员权限，则是返回状态为on的课程
-       * 并且如果不是免费课程（coursePrice不为0）,或者用户已购买，则不返回视频url
+       * 并且如果不是免费课程（coursePrice不为0）并且用户没有购买，则不返回视频url
        */
       if (!roleList.includes('管理员')) {
         let orderList = await firstValueFrom(

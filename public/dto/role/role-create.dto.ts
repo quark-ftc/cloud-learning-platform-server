@@ -1,10 +1,7 @@
 import { IsString, IsOptional } from 'class-validator';
 export class RoleCreateDto {
   @IsString()
-  name: string;
-
-  @IsString()
-  value: string;
+  roleName: string;
 
   @IsString()
   @IsOptional()

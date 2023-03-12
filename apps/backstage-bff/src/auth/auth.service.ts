@@ -97,7 +97,7 @@ export class AuthService {
     }
   }
 
-  //获取注册页的角色列表
+  //获取角色列表
   async getRoles() {
     try {
       const roles = await firstValueFrom(

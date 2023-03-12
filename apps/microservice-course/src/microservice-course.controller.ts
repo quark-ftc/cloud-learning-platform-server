@@ -42,7 +42,7 @@ export class MicroserviceCourseController {
     courseState: string;
     courseVideo: string;
     courseCover: string;
-    courseCategory
+    courseCategory: string;
   }) {
     return await this.prismaClient.course.create({
       data: {

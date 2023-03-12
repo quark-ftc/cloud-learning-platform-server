@@ -35,8 +35,17 @@ export class CourseController {
     },
     @Body() createCourseDto: CreateCourseDto,
   ) {
-    // console.log(createCourseDto);
-    // console.log(files.courseCover);
+    // // ! 解决originalname中文乱码的问题
+    // files.courseCover[0].originalname = Buffer.from(
+    //   files.courseCover[0].originalname,
+    //   'latin1',
+    // ).toString('utf8');
+    // files.courseVideo[0].originalname = Buffer.from(
+    //   files.courseVideo[0].originalname,
+    //   'latin1',
+    // ).toString('utf8');
+    console.log(files);
+    console.log(createCourseDto);
     try {
       //先查询课程是否已存在
       const course = await firstValueFrom(
@@ -95,7 +104,7 @@ export class CourseController {
     } catch (error) {
       return {
         status: 'failure',
-        message: 'error.message',
+        message: `上传文件失败${error.message}`,
       };
     }
   }

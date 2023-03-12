@@ -1,5 +1,5 @@
-import { Controller } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
+import { Controller, Inject } from '@nestjs/common';
+import { ClientProxy, MessagePattern } from '@nestjs/microservices';
 import { PrismaService } from '../../../libs/prisma/src/prisma.service';
 import { RoleCreateDto } from '../../../public/dto/role/role-create.dto';
 import { AppBffController } from '../../app-bff/src/app-bff.controller';
@@ -14,8 +14,24 @@ export class MicroserviceRoleController {
   }
 
   //创建角色
-  @MessagePattern('post')
-  async createRole(roleCreateDto: RoleCreateDto) {}
+  @MessagePattern('create-role')
+  async createRole(roleCreateDto: RoleCreateDto) {
+    return await this.prismaClient.role.create({
+      data: {
+        roleName: roleCreateDto.roleName,
+        description: roleCreateDto.description,
+      },
+    });
+  }
+  //删除角色
+  @MessagePattern('delete-role')
+  async deleteRole(roleName: string) {
+    return await this.prismaClient.role.delete({
+      where: {
+        roleName,
+      },
+    });
+  }
 
   //获取一个用户的全部菜单
   /**

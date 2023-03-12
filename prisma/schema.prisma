@@ -105,7 +105,7 @@ model MenuToRole {
 model Course {
   courseId          String            @id @default(uuid()) @map("course_id")
   courseName        String            @unique @map("course_name")
-  courseDescription String?           @map("course_Description")
+  courseDescription String?           @map("course_description")
   courseCover       String            @map("course_cover")
   courseVideo       String            @map("course_video")
   coursePrice       String            @map("course_price")

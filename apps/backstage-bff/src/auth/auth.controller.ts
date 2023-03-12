@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Inject,
   Post,
   Request,
   UploadedFile,
@@ -16,25 +17,88 @@ import { UserLoginDto } from 'public/dto/user/user-login.dto';
 import { UserRegisterDto } from 'public/dto/user/user-register.dto';
 import { AuthService } from './auth.service';
 import { generateFileUploadKey } from '../../../../public/util/generate-file-upload-key';
+import { ClientProxy } from '@nestjs/microservices';
+import { RoleCreateDto } from '../../../../public/dto/role/role-create.dto';
+import { firstValueFrom } from 'rxjs';
 
 @Controller('/auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    @Inject('microserviceRoleClient')
+    private readonly microserviceRoleClient: ClientProxy,
+    @Inject('microserviceUserClient')
+    private readonly microserviceUserClient: ClientProxy,
+  ) {}
+  //用户注册
   @Post('/register')
   async register(@Body() userRegisterDto: UserRegisterDto) {
     const result = await this.authService.register(userRegisterDto);
     return result;
   }
-
+  //用户登陆
   @Post('/login')
   async login(@Body() userLoginDto: UserLoginDto) {
     const result = await this.authService.login(userLoginDto);
     return result;
   }
 
+  //获取角色列表
   @Get('get-roles')
   async getRoles() {
     return await this.authService.getRoles();
+  }
+  //创建角色
+  @UseGuards(AuthGuard('jwtStrategy'))
+  @Post('create-role')
+  async createRole(
+    @Request() { user: { username } },
+    @Body() { roleName, description },
+  ) {
+    try {
+      //获取一个用户的角色列表，判断其是否是管理员
+      let rolesOfUser = await firstValueFrom(
+        this.microserviceUserClient.send('get:username:role', username),
+      );
+
+      rolesOfUser = rolesOfUser.map((item) => {
+        return item.roleName;
+      });
+      if (!rolesOfUser.includes('管理员')) {
+        return {
+          status: 'failure',
+          message: '您不是管理员,无权创建用户',
+        };
+      }
+      //查看角色列表，防止重复创建
+      let roleList = await firstValueFrom(
+        this.microserviceRoleClient.send('get', ''),
+      );
+      roleList = roleList.map((item) => {
+        return item.roleName;
+      });
+      if (roleList.includes(roleName)) {
+        return {
+          status: 'failure',
+          message: `用户:${roleName}已存在，请勿重复创建`,
+        };
+      }
+      await firstValueFrom(
+        this.microserviceRoleClient.send('create-role', {
+          roleName,
+          description,
+        }),
+      );
+      return {
+        status: 'success',
+        message: `创建角色:${roleName}成功`,
+      };
+    } catch (error) {
+      return {
+        status: 'failure',
+        message: `创建角色失败:${error.message}`,
+      };
+    }
   }
 
   @UseGuards(AuthGuard('jwtStrategy'))

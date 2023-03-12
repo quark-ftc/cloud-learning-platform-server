@@ -116,6 +116,7 @@ export class MicroserviceUserController {
     return await this.prismaClient.user.count();
   }
 
+  //更新用户信息
   @MessagePattern('update-user-info')
   async updateUserInfo(updateData: {
     username: string;
@@ -146,6 +147,7 @@ export class MicroserviceUserController {
     return url;
   }
 
+  //删除用户头像
   @MessagePattern('delete-avatar')
   async deleteAvatar(key: string) {
     const responseData = await this.uploadFileService.delete(key);
@@ -153,6 +155,7 @@ export class MicroserviceUserController {
     return responseData;
   }
 
+  //获取所有学生
   @MessagePattern('get-all-student')
   async getAllStudent() {
     return await this.prismaClient.student.findMany({
