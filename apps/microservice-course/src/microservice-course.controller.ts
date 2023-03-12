@@ -1,11 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
-import { UploadFileService } from '../../../libs/upload-file/src/upload-file.service';
 import { PrismaService } from '../../../libs/prisma/src/prisma.service';
-import { CreateCourseDto } from '../../../public/dto/course/create-course.dto';
-import { PrismaClient } from '@prisma/client';
-import { userInfo } from 'os';
-import { use } from 'passport';
+import { UploadFileService } from '../../../libs/upload-file/src/upload-file.service';
 
 @Controller()
 export class MicroserviceCourseController {
@@ -98,17 +94,18 @@ export class MicroserviceCourseController {
     courseId: string;
     address: string;
   }) {
+    console.log(addShoppingCartInfo);
     return await this.prismaClient.shoppingCart.create({
       data: {
         address: addShoppingCartInfo.address,
-        course: {
-          connect: {
-            courseId: addShoppingCartInfo.courseId,
-          },
-        },
         user: {
           connect: {
             username: addShoppingCartInfo.username,
+          },
+        },
+        course: {
+          connect: {
+            courseId: addShoppingCartInfo.courseId,
           },
         },
       },
@@ -132,14 +129,33 @@ export class MicroserviceCourseController {
   //获取购物车中的所有订单
   @MessagePattern('get-all-orders-in-shopping-cart')
   async getAllOrdersInShoppingCart(username: string) {
-    return await this.prismaClient.shoppingCart.findMany({
-      where: {
-        username,
-      },
+    let courseInShoppingCartList =
+      await this.prismaClient.shoppingCart.findMany({
+        where: {
+          username,
+        },
+        select: {
+          username: true,
+          course: {
+            select: {
+              courseId: true,
+              courseName: true,
+              courseCover: true,
+              courseDescription: true,
+              coursePrice: true,
+            },
+          },
+        },
+      });
+    courseInShoppingCartList = courseInShoppingCartList.map((item) => {
+      Object.assign(item, item.course);
+      delete item.course;
+      return item;
     });
+    return courseInShoppingCartList;
   }
 
-  //根据唯一的用户名和课程id在购物车中查找订单
+  //根据唯一的用户名和课程id查找购物车中的信息
   @MessagePattern('get-order-in-shopping-cart-by-username-and-course-id')
   async getOrderByUsernameAndCourseId(findInfo: {
     username: string;
@@ -169,14 +185,16 @@ export class MicroserviceCourseController {
       },
     });
   }
-  //向已购订单中添加课程
+  //向已购订单中添加课程(购买)
   @MessagePattern('add-course-to-purchased-course')
   async addCourseToPurchasedCourse(addInfo: {
     username: string;
     courseId: string;
+    price: string;
   }) {
     return await this.prismaClient.purchasedCourse.create({
       data: {
+        price: addInfo.price,
         course: {
           connect: {
             courseId: addInfo.courseId,
@@ -189,5 +207,35 @@ export class MicroserviceCourseController {
         },
       },
     });
+  }
+  //查询所有已购课程
+  @MessagePattern('get-all-purchased-course')
+  async getAllPurchasedCourse(username: string) {
+    let orderList = await this.prismaClient.purchasedCourse.findMany({
+      where: {
+        username,
+      },
+      select: {
+        courseId: true,
+        orderId: true,
+        price: true,
+        course: {
+          select: {
+            courseName: true,
+            courseDescription: true,
+            courseCategory: true,
+            courseGrade: true,
+            courseVideo: true,
+            courseCover: true,
+          },
+        },
+      },
+    });
+    orderList = orderList.map((item) => {
+      Object.assign(item, item.course);
+      delete item.course;
+      return item;
+    });
+    return orderList;
   }
 }

@@ -74,7 +74,6 @@ model Menu {
   createAt    DateTime     @default(now()) @map("create_at")
   updateAt    DateTime     @default(now()) @map("update_at")
   roles       MenuToRole[]
-  
 
   @@map("menu")
 }
@@ -115,14 +114,14 @@ model Course {
   courseCategory    String?           @map("course_categore")
   shoppingCart      shoppingCart[]
   purchasedCourse   PurchasedCourse[]
-  createAt DateTime @default(now()) @map("create_at")
-  updateAt DateTime @default(now()) @updatedAt @map("update_at")
+  createAt          DateTime          @default(now()) @map("create_at")
+  updateAt          DateTime          @default(now()) @updatedAt @map("update_at")
 
   @@map("course")
 }
 
 model shoppingCart {
-  orderId  String   @id @default(uuid()) @map("order_id")
+  id       String   @id @default(uuid())
   username String
   user     User     @relation(fields: [username], references: [username])
   courseId String   @map("course_id")
@@ -136,14 +135,16 @@ model shoppingCart {
 }
 
 model PurchasedCourse {
-  purchasedCourseId String @id @default(uuid()) @map("purchased_course_id")
-  username          String
-  user              User   @relation(fields: [username], references: [username])
-  courseId          String @map("course_id")
-  course            Course @relation(fields: [courseId], references: [courseId])
+  orderId  String   @id @default(uuid()) @map("order_id")
+  username String
+  user     User     @relation(fields: [username], references: [username])
+  courseId String   @map("course_id")
+  course   Course   @relation(fields: [courseId], references: [courseId])
   createAt DateTime @default(now()) @map("create_at")
   updateAt DateTime @default(now()) @updatedAt @map("update_at")
-  @@unique([username,courseId],name:"usernameAndCourseId")
+  price    String
+
+  @@unique([username, courseId], name: "usernameAndCourseId")
   @@map("purchased_course")
 }
 
@@ -155,19 +156,19 @@ model Class {
   classNumber      Int              @unique @default(autoincrement()) @map("class_number")
   classDescription String?          @map("class_description")
   students         ClassToStudent[]
-  createAt DateTime @default(now()) @map("create_at")
-  updateAt DateTime @default(now()) @updatedAt @map("update_at")
+  createAt         DateTime         @default(now()) @map("create_at")
+  updateAt         DateTime         @default(now()) @updatedAt @map("update_at")
 
   @@map("class")
 }
 
 model ClassToStudent {
   studentId String
-  student   Student @relation(fields: [studentId], references: [studentId])
+  student   Student  @relation(fields: [studentId], references: [studentId])
   classId   String
-  class     Class   @relation(fields: [classId], references: [classId])
-  createAt DateTime @default(now()) @map("create_at")
-  updateAt DateTime @default(now()) @updatedAt @map("update_at")
+  class     Class    @relation(fields: [classId], references: [classId])
+  createAt  DateTime @default(now()) @map("create_at")
+  updateAt  DateTime @default(now()) @updatedAt @map("update_at")
 
   @@id([classId, studentId])
   @@map("class_to_student")

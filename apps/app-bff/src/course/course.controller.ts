@@ -10,7 +10,6 @@ import { ClientProxy } from '@nestjs/microservices';
 import { AuthGuard } from '@nestjs/passport';
 import { firstValueFrom } from 'rxjs';
 import { AddCourseToShoppingCartDto } from '../../../../public/dto/course/add-course-to-shopping-cart.dto';
-import { use } from 'passport';
 
 @Controller('course')
 export class CourseController {
@@ -18,6 +17,7 @@ export class CourseController {
     @Inject('microserviceCourseClient')
     private readonly microserviceCourseClient: ClientProxy,
   ) {}
+  //获取全部的课程列表
   @Post('get-course-list')
   async getCourseList() {
     try {
@@ -38,7 +38,8 @@ export class CourseController {
       };
     }
   }
-  //将订单加入到购物车
+
+  //将课程加入到购物车
   @Post('add-course-to-shopping-cart')
   @UseGuards(AuthGuard('jwtStrategy'))
   async addCourseToShoppingCart(
@@ -143,7 +144,7 @@ export class CourseController {
       };
     }
   }
-  //清空购物车
+  //清空(删除购物车中的所有内容)购物车
   @UseGuards(AuthGuard('jwtStrategy'))
   @Post('delete-all-from-shopping-cart')
   async deleteAllFromShoppingCart(@Request() { user: { username } }) {
@@ -157,6 +158,9 @@ export class CourseController {
       );
       const deleteCourseFunctionList = ordersInShoppingCartList.map((item) => {
         return (async () => {
+          console.log('aaaaaa');
+          console.log(username);
+          console.log('bbbb');
           //将订单从购物车删除
           await firstValueFrom(
             this.microserviceCourseClient.send(
@@ -187,7 +191,7 @@ export class CourseController {
   @UseGuards(AuthGuard('jwtStrategy'))
   async getAllOrdersInShoppingCart(@Request() { user: { username } }) {
     try {
-      const orderList = await firstValueFrom(
+      const courseInShoppingCartList = await firstValueFrom(
         this.microserviceCourseClient.send(
           'get-all-orders-in-shopping-cart',
           username,
@@ -197,7 +201,7 @@ export class CourseController {
         status: 'success',
         message: `获取 ${username}的所有购物车信息成功`,
         data: {
-          orderList,
+          courseInShoppingCartList,
         },
       };
     } catch (error) {
@@ -220,6 +224,7 @@ export class CourseController {
           username,
         ),
       );
+      console.log(ordersInShoppingCartList);
       // const buyCourseFunctionList = ordersInShoppingCartList.map(
       //   async (item) => {
       //     return new Promise((resolve, reject) => {
@@ -276,6 +281,7 @@ export class CourseController {
               {
                 username: item.username,
                 courseId: item.courseId,
+                price: item.coursePrice,
               },
             ),
           );
@@ -295,10 +301,16 @@ export class CourseController {
     }
   }
 
+  //直接购买课程
   @UseGuards(AuthGuard('jwtStrategy'))
   @Post('buy-course')
-  async buyCourse(@Body() { courseId }, @Request() { user: { username } }) {
+  async buyCourse(
+    @Body() { courseId, price },
+    @Request() { user: { username } },
+  ) {
+    console.log(courseId);
     try {
+      //查找所有课程列表，确认课程是否存在
       const course = await firstValueFrom(
         this.microserviceCourseClient.send('get-course-by-course-id', courseId),
       );
@@ -308,10 +320,33 @@ export class CourseController {
           message: '您要购买的课程不存在',
         };
       }
+      //查找用户的已购课程列表，确认课程是否购买过，防止重复购买
+      let purchasedCourseList = await firstValueFrom(
+        this.microserviceCourseClient.send(
+          'get-all-purchased-course',
+          username,
+        ),
+      );
+      purchasedCourseList = purchasedCourseList.map((item) => {
+        Object.assign(item, item.course);
+        delete item.course;
+        return item;
+      });
+      const courseIdList = purchasedCourseList.map((item) => {
+        return item.courseId;
+      });
+      if (courseIdList.includes(courseId)) {
+        return {
+          status: 'failure',
+          message: `${username}用户的课程: ${courseId}已经购买过,请勿重负购买`,
+        };
+      }
+      //购买课程，将课程添加到已购商品列表
       await firstValueFrom(
         this.microserviceCourseClient.send('add-course-to-purchased-course', {
           username,
           courseId,
+          price,
         }),
       );
       return {
@@ -322,6 +357,32 @@ export class CourseController {
       return {
         status: 'failure',
         message: `购买课程失败: ${error.message}`,
+      };
+    }
+  }
+  //获取所有的订单
+  @UseGuards(AuthGuard('jwtStrategy'))
+  @Post('get-all-orders')
+  async getAllOrders(@Request() { user: { username } }) {
+    console.log(username);
+    try {
+      const orderList = await firstValueFrom(
+        this.microserviceCourseClient.send(
+          'get-all-purchased-course',
+          username,
+        ),
+      );
+      return {
+        status: 'success',
+        message: '获取订单成功',
+        data: {
+          orderList,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 'failure',
+        message: `获取所有订单失败: ${error.message}`,
       };
     }
   }

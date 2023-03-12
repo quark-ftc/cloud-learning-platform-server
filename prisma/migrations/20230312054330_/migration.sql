@@ -94,21 +94,36 @@ CREATE TABLE `course` (
     `course_grade` VARCHAR(191) NOT NULL,
     `course_state` VARCHAR(191) NOT NULL,
     `course_categore` VARCHAR(191) NULL,
+    `create_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `update_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `course_course_name_key`(`course_name`),
     PRIMARY KEY (`course_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `shoppingCart` (
-    `order_id` VARCHAR(191) NOT NULL,
+CREATE TABLE `shopping_cart` (
+    `id` VARCHAR(191) NOT NULL,
     `username` VARCHAR(191) NOT NULL,
     `course_id` VARCHAR(191) NOT NULL,
     `address` VARCHAR(191) NOT NULL,
     `create_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `update_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
-    UNIQUE INDEX `shoppingCart_username_course_id_key`(`username`, `course_id`),
+    UNIQUE INDEX `shopping_cart_username_course_id_key`(`username`, `course_id`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `purchased_course` (
+    `order_id` VARCHAR(191) NOT NULL,
+    `username` VARCHAR(191) NOT NULL,
+    `course_id` VARCHAR(191) NOT NULL,
+    `create_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `update_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `price` VARCHAR(191) NOT NULL,
+
+    UNIQUE INDEX `purchased_course_username_course_id_key`(`username`, `course_id`),
     PRIMARY KEY (`order_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -119,6 +134,8 @@ CREATE TABLE `class` (
     `className` VARCHAR(191) NOT NULL,
     `class_number` INTEGER NOT NULL AUTO_INCREMENT,
     `class_description` VARCHAR(191) NULL,
+    `create_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `update_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `class_className_key`(`className`),
     UNIQUE INDEX `class_class_number_key`(`class_number`),
@@ -129,6 +146,8 @@ CREATE TABLE `class` (
 CREATE TABLE `class_to_student` (
     `studentId` VARCHAR(191) NOT NULL,
     `classId` VARCHAR(191) NOT NULL,
+    `create_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `update_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`classId`, `studentId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -155,10 +174,16 @@ ALTER TABLE `menu_to_role` ADD CONSTRAINT `menu_to_role_title_fkey` FOREIGN KEY 
 ALTER TABLE `menu_to_role` ADD CONSTRAINT `menu_to_role_role_name_fkey` FOREIGN KEY (`role_name`) REFERENCES `role`(`role_name`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `shoppingCart` ADD CONSTRAINT `shoppingCart_username_fkey` FOREIGN KEY (`username`) REFERENCES `user`(`username`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `shopping_cart` ADD CONSTRAINT `shopping_cart_username_fkey` FOREIGN KEY (`username`) REFERENCES `user`(`username`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `shoppingCart` ADD CONSTRAINT `shoppingCart_course_id_fkey` FOREIGN KEY (`course_id`) REFERENCES `course`(`course_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `shopping_cart` ADD CONSTRAINT `shopping_cart_course_id_fkey` FOREIGN KEY (`course_id`) REFERENCES `course`(`course_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `purchased_course` ADD CONSTRAINT `purchased_course_username_fkey` FOREIGN KEY (`username`) REFERENCES `user`(`username`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `purchased_course` ADD CONSTRAINT `purchased_course_course_id_fkey` FOREIGN KEY (`course_id`) REFERENCES `course`(`course_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `class` ADD CONSTRAINT `class_created_teacher_fkey` FOREIGN KEY (`created_teacher`) REFERENCES `teacher`(`username`) ON DELETE RESTRICT ON UPDATE CASCADE;
