@@ -111,7 +111,7 @@ model Course {
   coursePrice       String            @map("course_price")
   courseGrade       String            @map("course_grade")
   courseState       String            @map("course_state")
-  courseCategory    String?           @map("course_categore")
+  courseCategory    String?           @map("course_category")
   shoppingCart      shoppingCart[]
   purchasedCourse   PurchasedCourse[]
   createAt          DateTime          @default(now()) @map("create_at")

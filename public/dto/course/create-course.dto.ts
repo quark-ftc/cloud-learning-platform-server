@@ -10,4 +10,6 @@ export class CreateCourseDto {
   courseGrade: string;
   @IsString()
   courseState: string;
+  @IsString()
+  courseCategory: string;
 }

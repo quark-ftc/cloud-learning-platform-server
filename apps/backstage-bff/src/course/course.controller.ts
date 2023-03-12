@@ -37,7 +37,6 @@ export class CourseController {
   ) {
     // console.log(createCourseDto);
     // console.log(files.courseCover);
-    console.log(files);
     try {
       //先查询课程是否已存在
       const course = await firstValueFrom(
@@ -81,10 +80,11 @@ export class CourseController {
         courseVideo: courseVideoUrl,
         courseCover: courseCoverUrl,
       };
+      console.log(createCourseInfo.courseCategory);
       const createdCourse = await firstValueFrom(
         this.microserviceCourseClient.send('create-course', createCourseInfo),
       );
-      console.log(createdCourse);
+
       return {
         status: 'failure',
         message: '课程上传成功',

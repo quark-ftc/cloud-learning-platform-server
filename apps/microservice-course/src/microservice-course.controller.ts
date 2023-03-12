@@ -32,6 +32,41 @@ export class MicroserviceCourseController {
     const responseData = await this.uploadFileService.delete(key);
     console.log(responseData);
   }
+  //将课程信息写入数据库
+  @MessagePattern('create-course')
+  async createCourse(createCourseInfo: {
+    courseName: string;
+    courseDescription: string;
+    coursePrice: string;
+    courseGrade: string;
+    courseState: string;
+    courseVideo: string;
+    courseCover: string;
+    courseCategory
+  }) {
+    return await this.prismaClient.course.create({
+      data: {
+        courseCover: createCourseInfo.courseCover,
+        courseGrade: createCourseInfo.courseGrade,
+        courseName: createCourseInfo.courseName,
+        coursePrice: createCourseInfo.coursePrice,
+        courseVideo: createCourseInfo.courseVideo,
+        courseDescription: createCourseInfo.courseDescription,
+        courseState: createCourseInfo.courseState,
+        courseCategory: createCourseInfo.courseCategory,
+      },
+      select: {
+        courseCover: true,
+        courseDescription: true,
+        courseGrade: true,
+        courseName: true,
+        coursePrice: true,
+        courseState: true,
+        courseVideo: true,
+        courseCategory: true,
+      },
+    });
+  }
   //根据课程名称查找课程
   @MessagePattern('get-course-by-course-name')
   async getCourseByCourseName(courseName: string) {
@@ -50,38 +85,7 @@ export class MicroserviceCourseController {
       },
     });
   }
-  //将课程信息写入数据库
-  @MessagePattern('create-course')
-  async createCourse(createCourseInfo: {
-    courseName: string;
-    courseDescription: string;
-    coursePrice: string;
-    courseGrade: string;
-    courseState: string;
-    courseVideo: string;
-    courseCover: string;
-  }) {
-    return await this.prismaClient.course.create({
-      data: {
-        courseCover: createCourseInfo.courseCover,
-        courseGrade: createCourseInfo.courseGrade,
-        courseName: createCourseInfo.courseName,
-        coursePrice: createCourseInfo.coursePrice,
-        courseVideo: createCourseInfo.courseVideo,
-        courseDescription: createCourseInfo.courseDescription,
-        courseState: createCourseInfo.courseState,
-      },
-      select: {
-        courseCover: true,
-        courseDescription: true,
-        courseGrade: true,
-        courseName: true,
-        coursePrice: true,
-        courseState: true,
-        courseVideo: true,
-      },
-    });
-  }
+
   //获取所有课程
   @MessagePattern('find-all-course')
   async findAllCourse() {
