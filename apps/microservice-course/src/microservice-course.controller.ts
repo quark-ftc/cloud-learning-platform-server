@@ -11,13 +11,18 @@ export class MicroserviceCourseController {
   ) {}
   //根据指定的目录和key将文件上传到腾讯云COS中
   @MessagePattern('upload')
-  async upload(uploadInfo: { directory: string; key: string; file: any }) {
+  async upload(uploadInfo: {
+    directory: string;
+    key: string;
+    filePath: string;
+  }) {
     // console.log(courseVideo.buffer.data);
     const { Location } = await this.uploadFileService
       .upload(
         uploadInfo.directory,
         uploadInfo.key,
-        Buffer.from(uploadInfo.file.buffer.data),
+        // Buffer.from(uploadInfo.file.buffer.data),
+        uploadInfo.filePath,
       )
       .catch((error) => {
         console.log(error.message);

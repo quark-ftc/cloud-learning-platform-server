@@ -13,19 +13,45 @@ import { CreateClassDto } from '../../../../public/dto/class/create-class.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { UploadedFiles } from '@nestjs/common';
 import { generateFileUploadKey } from 'public/util';
-
+import { diskStorage } from 'multer';
+import * as fs from 'fs';
 @Controller('course')
 export class CourseController {
   constructor(
     @Inject('microserviceCourseClient')
     private readonly microserviceCourseClient: ClientProxy,
   ) {}
+  //上传课程
   @Post('upload')
   @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: 'courseVideo', maxCount: 1 },
-      { name: 'courseCover', maxCount: 1 },
-    ]),
+    FileFieldsInterceptor(
+      [
+        { name: 'courseVideo', maxCount: 1 },
+        { name: 'courseCover', maxCount: 1 },
+      ],
+      {
+        storage: diskStorage({
+          destination(req, file, callback) {
+            let filePath = '/uploadCatch/courseDest/';
+            if (file.fieldname == 'courseVideo') {
+              filePath += 'video';
+            }
+            if (file.fieldname == 'courseCover') {
+              filePath += 'cover';
+            }
+            //判断文件夹是否存在，不存在则自动生成
+            if (!fs.existsSync(filePath)) {
+              fs.mkdirSync(filePath, { recursive: true });
+            }
+            return callback(null, filePath);
+          },
+          filename(req, file, callback) {
+            const fileName = generateFileUploadKey(file.originalname);
+            callback(null, fileName);
+          },
+        }),
+      },
+    ),
   )
   async upload(
     @UploadedFiles()
@@ -35,6 +61,7 @@ export class CourseController {
     },
     @Body() createCourseDto: CreateCourseDto,
   ) {
+    console.log(files);
     // // ! 解决originalname中文乱码的问题
     // files.courseCover[0].originalname = Buffer.from(
     //   files.courseCover[0].originalname,
@@ -67,9 +94,11 @@ export class CourseController {
         this.microserviceCourseClient.send('upload', {
           directory: 'course/video',
           key: videoKey,
-          file: files.courseCover[0],
+          filePath: files.courseVideo[0].path,
         }),
       );
+      //上传完成后删除本地文件
+      fs.unlinkSync(files.courseVideo[0].path);
       //尝试上传课程封面
       const courseCoverKey = generateFileUploadKey(
         files.courseCover[0].originalname,
@@ -78,9 +107,11 @@ export class CourseController {
         this.microserviceCourseClient.send('upload', {
           directory: 'course/cover',
           key: courseCoverKey,
-          file: files.courseCover[0],
+          filePath: files.courseCover[0].path,
         }),
       );
+      //上传完成后删除本地文件
+      fs.unlinkSync(files.courseCover[0].path);
       console.log(courseCoverUrl);
       console.log(courseVideoUrl);
       //视频和封面都上传成功后，写入数据库
@@ -95,7 +126,7 @@ export class CourseController {
       );
 
       return {
-        status: 'failure',
+        status: 'success',
         message: '课程上传成功',
         data: {
           course: createdCourse,

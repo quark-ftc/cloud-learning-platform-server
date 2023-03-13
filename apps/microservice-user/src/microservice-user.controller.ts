@@ -135,11 +135,15 @@ export class MicroserviceUserController {
   }
   //上传用户头像
   @MessagePattern('upload-avatar')
-  async uploadAvatar(uploadInfo: { directory: string; key: string; avatar }) {
+  async uploadAvatar(uploadInfo: {
+    directory: string;
+    key: string;
+    avatarPath;
+  }) {
     const { Location } = await this.uploadFileService.upload(
       uploadInfo.directory,
       uploadInfo.key,
-      Buffer.from(uploadInfo.avatar.buffer.data),
+      uploadInfo.avatarPath,
     );
 
     const url = 'https://' + Location;

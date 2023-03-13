@@ -11,6 +11,8 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+#上传文件时的缓存
+uploadCatch/
 # 配置文件
 .env
 # OS

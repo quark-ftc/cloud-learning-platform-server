@@ -127,12 +127,12 @@ export class AuthService {
     return userInfo;
   }
   //上传用户头像
-  async uploadUserAvatar(directory: string, key: string, avatar) {
+  async uploadUserAvatar(directory: string, key: string, avatarPath) {
     const url = await firstValueFrom(
       this.microserviceUserClient.send('upload-avatar', {
         directory,
         key,
-        avatar,
+        avatarPath,
       }),
     );
     return url;

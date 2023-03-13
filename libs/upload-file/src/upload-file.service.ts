@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 const COS = require('cos-nodejs-sdk-v5');
+import * as fs from 'fs';
 @Injectable()
 export class UploadFileService {
   constructor(private readonly configService: ConfigService) {}
@@ -13,13 +14,14 @@ export class UploadFileService {
     ChunkParallelLimit: 8, // 控制单个文件下分片上传并发数，在同园区上传可以设置较大的并发数
     ChunkSize: 1024 * 1024 * 8, // 控制分片大小，单位 B，在同园区上传可以设置较大的分片大小
   });
-  async upload(directory: string, key: string, file: Buffer) {
+  async upload(directory: string, key: string, filePath: string) {
     // console.log(file);
     return await this.cos.putObject({
       Bucket: this.configService.get('Bucket'),
       Region: this.configService.get('Region'),
       Key: directory + '/' + key,
-      Body: file,
+      Body: fs.createReadStream(filePath),
+      ContentLength: fs.statSync(filePath).size,
       onProgress: function (progressData) {
         console.log(JSON.stringify(progressData));
       },

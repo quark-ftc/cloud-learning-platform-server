@@ -20,6 +20,8 @@ import { generateFileUploadKey } from '../../../../public/util/generate-file-upl
 import { ClientProxy } from '@nestjs/microservices';
 import { RoleCreateDto } from '../../../../public/dto/role/role-create.dto';
 import { firstValueFrom } from 'rxjs';
+import { diskStorage } from 'multer';
+import * as fs from 'fs';
 
 @Controller('/auth')
 export class AuthController {
@@ -258,7 +260,24 @@ export class AuthController {
   //上传用户头像
   @UseGuards(AuthGuard('jwtStrategy'))
   @Post('update-avatar')
-  @UseInterceptors(FileInterceptor('avatar'))
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      storage: diskStorage({
+        destination(req, file, callback) {
+          const filePath = 'uploadCatch/avatar';
+          //判断文件夹是否存在，不存在则自动生成
+          if (!fs.existsSync(filePath)) {
+            fs.mkdirSync(filePath, { recursive: true });
+          }
+          return callback(null, filePath);
+        },
+        filename(req, file, callback) {
+          const fileName = generateFileUploadKey(file.originalname);
+          callback(null, fileName);
+        },
+      }),
+    }),
+  )
   async uploadUserAvatar(
     @UploadedFile() avatar: Express.Multer.File,
     @Request() { user },
@@ -276,8 +295,10 @@ export class AuthController {
       const url = await this.authService.uploadUserAvatar(
         'avatar',
         key,
-        avatar,
+        avatar.path,
       );
+      //上传完成后删除本地文件
+      fs.unlinkSync(avatar.path);
       await this.authService.updateUserInfo(user.username, 'avatar', url);
       return {
         status: 'success',
