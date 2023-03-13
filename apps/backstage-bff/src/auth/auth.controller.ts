@@ -267,7 +267,7 @@ export class AuthController {
           const filePath = 'uploadCatch/avatar';
           //判断文件夹是否存在，不存在则自动生成
           if (!fs.existsSync(filePath)) {
-            fs.mkdirSync(filePath, { recursive: true });
+            fs.mkdirSync(filePath, { recursive: true, mode: '777' });
           }
           return callback(null, filePath);
         },

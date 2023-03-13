@@ -462,7 +462,7 @@ export class CourseController {
       {
         storage: diskStorage({
           destination(req, file, callback) {
-            let filePath = '/uploadCatch/courseDest/';
+            let filePath = 'uploadCatch/courseDest/';
             if (file.fieldname == 'courseVideo') {
               filePath += 'video';
             }
@@ -471,7 +471,7 @@ export class CourseController {
             }
             //判断文件夹是否存在，不存在则自动生成
             if (!fs.existsSync(filePath)) {
-              fs.mkdirSync(filePath, { recursive: true });
+              fs.mkdirSync(filePath, { recursive: true, mode: '777' });
             }
             return callback(null, filePath);
           },
