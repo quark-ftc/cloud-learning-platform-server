@@ -35,7 +35,7 @@ model User {
 model Teacher {
   teacherId String  @id @default(uuid()) @map("teacher_id")
   username  String  @unique
-  user      User    @relation(fields: [username], references: [username])
+  user      User    @relation(fields: [username], references: [username], onDelete: Cascade, onUpdate: Cascade)
   classes   Class[]
 
   @@map("teacher")
@@ -44,7 +44,7 @@ model Teacher {
 model Student {
   studentId String           @id @default(uuid()) @map("student_id")
   username  String           @unique
-  user      User             @relation(fields: [username], references: [username])
+  user      User             @relation(fields: [username], references: [username], onDelete: Cascade, onUpdate: Cascade)
   classes   ClassToStudent[]
 
   @@map("student")
@@ -81,8 +81,8 @@ model Menu {
 model RoleToUser {
   roleName String   @map("role_name")
   username String   @map("username")
-  role     Role     @relation(fields: [roleName], references: [roleName])
-  user     User     @relation(fields: [username], references: [username])
+  role     Role     @relation(fields: [roleName], references: [roleName], onDelete: Cascade, onUpdate: Cascade)
+  user     User     @relation(fields: [username], references: [username], onDelete: Cascade, onUpdate: Cascade)
   createAt DateTime @default(now()) @map("create_at")
   updateAt DateTime @default(now()) @updatedAt @map("update_at")
 
@@ -93,8 +93,8 @@ model RoleToUser {
 model MenuToRole {
   menuTitle String   @map("title")
   roleName  String   @map("role_name")
-  menu      Menu     @relation(fields: [menuTitle], references: [menuTitle])
-  role      Role     @relation(fields: [roleName], references: [roleName])
+  menu      Menu     @relation(fields: [menuTitle], references: [menuTitle], onDelete: Cascade, onUpdate: Cascade)
+  role      Role     @relation(fields: [roleName], references: [roleName], onDelete: Cascade, onUpdate: Cascade)
   createAt  DateTime @default(now()) @map("create_at")
   updateAt  DateTime @default(now()) @updatedAt @map("update_at")
 
@@ -123,9 +123,9 @@ model Course {
 model shoppingCart {
   id       String   @id @default(uuid())
   username String
-  user     User     @relation(fields: [username], references: [username])
+  user     User     @relation(fields: [username], references: [username], onDelete: Cascade, onUpdate: Cascade)
   courseId String   @map("course_id")
-  course   Course   @relation(fields: [courseId], references: [courseId])
+  course   Course   @relation(fields: [courseId], references: [courseId], onDelete: Cascade, onUpdate: Cascade)
   address  String
   createAt DateTime @default(now()) @map("create_at")
   updateAt DateTime @default(now()) @updatedAt @map("update_at")
@@ -137,9 +137,9 @@ model shoppingCart {
 model PurchasedCourse {
   orderId  String   @id @default(uuid()) @map("order_id")
   username String
-  user     User     @relation(fields: [username], references: [username])
+  user     User     @relation(fields: [username], references: [username], onDelete: Cascade, onUpdate: Cascade)
   courseId String   @map("course_id")
-  course   Course   @relation(fields: [courseId], references: [courseId])
+  course   Course   @relation(fields: [courseId], references: [courseId], onDelete: Cascade, onUpdate: Cascade)
   createAt DateTime @default(now()) @map("create_at")
   updateAt DateTime @default(now()) @updatedAt @map("update_at")
   price    String
@@ -150,7 +150,7 @@ model PurchasedCourse {
 
 model Class {
   classId          String           @id @default(uuid()) @map("class_id")
-  createdTeacher   String           @default(uuid()) @map("created_teacher")
+  createdTeacher   String           @map("created_teacher")
   teacher          Teacher          @relation(fields: [createdTeacher], references: [username])
   className        String           @unique //班级名称
   classNumber      Int              @unique @default(autoincrement()) @map("class_number")
@@ -163,13 +163,13 @@ model Class {
 }
 
 model ClassToStudent {
-  studentId String
-  student   Student  @relation(fields: [studentId], references: [studentId])
-  classId   String
-  class     Class    @relation(fields: [classId], references: [classId])
-  createAt  DateTime @default(now()) @map("create_at")
-  updateAt  DateTime @default(now()) @updatedAt @map("update_at")
+  studentUsername String   @unique @map("student_username")
+  student         Student  @relation(fields: [studentUsername], references: [username], onDelete: Cascade, onUpdate: Cascade)
+  className       String   @unique @map("class_name")
+  class           Class    @relation(fields: [className], references: [className], onDelete: Cascade, onUpdate: Cascade)
+  createAt        DateTime @default(now()) @map("create_at")
+  updateAt        DateTime @default(now()) @updatedAt @map("update_at")
 
-  @@id([classId, studentId])
+  @@id([studentUsername, className])
   @@map("class_to_student")
 }

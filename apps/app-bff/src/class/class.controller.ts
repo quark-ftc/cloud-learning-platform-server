@@ -6,10 +6,10 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { CreateClassDto } from '../../../../public/dto/class/create-class.dto';
 import { ClientProxy } from '@nestjs/microservices';
+import { AuthGuard } from '@nestjs/passport';
 import { firstValueFrom } from 'rxjs';
+import { CreateClassDto } from '../../../../public/dto/class/create-class.dto';
 
 @Controller('class')
 export class ClassController {
@@ -19,6 +19,9 @@ export class ClassController {
     @Inject('microserviceUserClient')
     private readonly microserviceUserClient: ClientProxy,
   ) {}
+
+  //------------------------------------教师---------------------------------------------------
+  //创建班级
   @UseGuards(AuthGuard('jwtStrategy'))
   @Post('create-class')
   async createClass(
@@ -73,6 +76,121 @@ export class ClassController {
       };
     }
   }
+  //删除班级
+  @UseGuards(AuthGuard('jwtStrategy'))
+  @Post('delete-class')
+  async deleteClass(
+    @Request()
+    { user: { username } },
+    @Body() { className },
+  ) {
+    try {
+      const createdTeacher = await firstValueFrom(
+        this.microserviceClassClient.send('find-created-teacher', className),
+      );
+      if (createdTeacher.createdTeacher !== username) {
+        return {
+          status: 'failure',
+          message: `您不是班级 ${className}的创建者，无权删除班级`,
+        };
+      }
+      await firstValueFrom(
+        this.microserviceClassClient.send('delete-class', className),
+      );
+      return {
+        status: 'success',
+        message: `已删除班级：${className}`,
+      };
+    } catch (error) {
+      return {
+        status: 'failure',
+        message: `删除班级失败${error.message}`,
+      };
+    }
+  }
+  //从自己创建的班级中删除指定学生
+  @UseGuards(AuthGuard('jwtStrategy'))
+  @Post('delete-student-from-class')
+  async deleteStudentFromClass(
+    @Request() { user: { username } },
+    @Body() { studentName, className },
+  ) {
+    try {
+      const createdTeacher = await firstValueFrom(
+        this.microserviceClassClient.send('find-created-teacher', className),
+      );
+      if (createdTeacher.createdTeacher !== username) {
+        return {
+          status: 'failure',
+          message: `您不是班级 ${className}的创建者，无权删除学生`,
+        };
+      }
+      if (
+        !this.microserviceClassClient.send('is-student-in-class', {
+          username: studentName,
+          className,
+        })
+      ) {
+        return {
+          status: 'failure',
+          message: `学生${studentName}不在班级${className}中，无需退出}`,
+        };
+      }
+      await firstValueFrom(
+        this.microserviceClassClient.send('student-drop-out-of-class', {
+          username: studentName,
+          className,
+        }),
+      );
+      return {
+        status: 'success',
+        message: `用户${studentName}已经成退出班级${className}`,
+      };
+    } catch (error) {
+      return {
+        status: 'failure',
+        message: `学生 ${username}退出班级${className}失败：${error.message}`,
+      };
+    }
+  }
+  //获取所有自己创建的班级
+  @UseGuards(AuthGuard('jwtStrategy'))
+  @Post('get-all-class-by-specified-teacher')
+  async getAllClassBySpecifiedTeacher(@Request() { user: { username } }) {
+    try {
+      console.log('1');
+      if (
+        !(await firstValueFrom(
+          this.microserviceUserClient.send('is-user-teacher', username),
+        ))
+      ) {
+        return {
+          status: 'failure',
+          message: '你不是教师，无法获得自己创建的班级',
+        };
+      }
+      const classList = await firstValueFrom(
+        this.microserviceClassClient.send(
+          'get-all-class-by-specified-teacher',
+          username,
+        ),
+      );
+      return {
+        status: 'success',
+        message: `查找教师${username}创建的所有班级成功`,
+        data: {
+          classList,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 'failure',
+        message: `获取教师${username}创建的班级失败:${error.message}`,
+      };
+    }
+  }
+  //-------------------------------------管理员----------------------------------------------------
+  //获取所有班级列表
   @UseGuards(AuthGuard('jwtStrategy'))
   @Post('get-all-class')
   async getAllClass() {
@@ -92,6 +210,143 @@ export class ClassController {
       return {
         status: 'failure',
         message: `获取班级列表失败：${error.message}`,
+      };
+    }
+  }
+  //--------------------------------------学生-----------------------------------------------------
+  //学生加入班级
+  @UseGuards(AuthGuard('jwtStrategy'))
+  @Post('student-add-to-class')
+  async studentAddToClass(
+    @Request() { user: { username } },
+    @Body() { className },
+  ) {
+    try {
+      let roleList = await firstValueFrom(
+        this.microserviceUserClient.send('get:username:role', username),
+      );
+      roleList = roleList.map((item) => {
+        return item.roleName;
+      });
+      console.log(roleList);
+      if (!roleList.includes('学生')) {
+        return {
+          status: 'failure',
+          message: '您不是学生，无法加入班级',
+        };
+      }
+      if (
+        !(await firstValueFrom(
+          this.microserviceClassClient.send(
+            'get-class-by-class-name',
+            className,
+          ),
+        ))
+      ) {
+        return {
+          status: 'failure',
+          message: '您要加入的班级不存在',
+        };
+      }
+      await firstValueFrom(
+        this.microserviceClassClient.send('student-add-to-class', {
+          username,
+          className,
+        }),
+      );
+      return {
+        status: 'success',
+        message: `学生${username}加入班级${className}成功`,
+      };
+    } catch (error) {
+      return {
+        status: 'failure',
+        message: `加入班级失败：${error.message}`,
+      };
+    }
+  }
+  //学生主动退出班级
+  @UseGuards(AuthGuard('jwtStrategy'))
+  @Post('student-drop-out-of-class')
+  async studentDropOutOfClass(
+    @Request()
+    { user: { username } },
+    @Body() { className },
+  ) {
+    try {
+      if (
+        !this.microserviceClassClient.send('is-student-in-class', {
+          username,
+          className,
+        })
+      ) {
+        return {
+          status: 'failure',
+          message: `用户${username}不在班级${className}中，无需退出}`,
+        };
+      }
+      await firstValueFrom(
+        this.microserviceClassClient.send('student-drop-out-of-class', {
+          username,
+          className,
+        }),
+      );
+      return {
+        status: 'success',
+        message: `用户${username}已经成退出班级${className}`,
+      };
+    } catch (error) {
+      return {
+        status: 'failure',
+        message: `学生 ${username}退出班级${className}失败：${error.message}`,
+      };
+    }
+  }
+  //-----------------------------------公共----------------------------------------------------
+  //获取指定班级的全部人员列表
+  @UseGuards(AuthGuard('jwtStrategy'))
+  @Post('get-all-user-of-specified-class')
+  async getAllUserOfSpecifiedClass(
+    @Request() { user: { username } },
+    @Body() { className },
+  ) {
+    try {
+      if (
+        !(await firstValueFrom(
+          this.microserviceClassClient.send('is-student-in-class', {
+            username,
+            className,
+          }),
+        )) &&
+        !(await firstValueFrom(
+          this.microserviceClassClient.send('is-teacher-in-class', {
+            username,
+            className,
+          }),
+        ))
+      ) {
+        return {
+          status: 'failure',
+          message: `用户${username}不在班级中，无法查看班级成员列表`,
+        };
+      }
+      const classMemberList = await firstValueFrom(
+        this.microserviceClassClient.send('get-all-user-of-specified-class', {
+          className,
+          username,
+        }),
+      );
+      return {
+        status: 'success',
+        message: '请求班级成员列表成功',
+        data: {
+          classMemberList,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 'failure',
+        message: `用户${username}查找班级${className}所有成员的请求失败：${error.message}`,
       };
     }
   }

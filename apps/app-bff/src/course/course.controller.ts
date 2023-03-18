@@ -164,12 +164,7 @@ export class CourseController {
   }
   //将订单从购物车删除
 
-  /**
-   * async函数返回的所有内容全部会被包装成Promise
-   * 所以通过：async() = {return value}可以获得一个promise
-   * 通过立即执行函数可以获得这个promise
-   * const result = (async ()=> {return value})()
-   */
+  
   @UseGuards(AuthGuard('jwtStrategy'))
   @Post('delete-course-from-shopping-cart')
   async deleteCourseFromShoppingCart(

@@ -12,9 +12,36 @@ export class AuthService {
   constructor(
     @Inject('microserviceUserClient')
     private readonly microserviceUserClient: ClientProxy,
+    @Inject('microserviceRoleClient')
+    private readonly microserviceRoleClient: ClientProxy,
     private readonly jwtService: JwtService,
   ) {}
+  //获取系统中存在的角色列表
+  async getRoles() {
+    try {
+      const roles = await firstValueFrom(
+        this.microserviceRoleClient.send('get', 'none'),
+      );
 
+      const roleNameList = roles.map((item) => {
+        return item.roleName;
+      });
+      console.log(roleNameList);
+      return {
+        status: 'success',
+        message: '获取角色成功',
+        data: {
+          roles: roleNameList,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 'failure',
+        message: `角色获取失败：${error.message}`,
+      };
+    }
+  }
+  //注册
   async register(userRegisterDto: UserRegisterDto) {
     try {
       const user = await firstValueFrom(
@@ -45,7 +72,7 @@ export class AuthService {
       };
     }
   }
-
+  //登陆
   async login(userLoginDto: UserLoginDto) {
     try {
       console.log(userLoginDto);
@@ -79,40 +106,14 @@ export class AuthService {
       throw new UnauthorizedException(error.message);
     }
   }
-
+  //获取用户具有的所有角色
   async getUserRolesByUsername(username: string) {
     const roleList = await firstValueFrom(
       this.microserviceUserClient.send('get:username:role', username),
     );
     return roleList;
   }
-  async getAllStudent() {
-    try {
-      let studentList = await firstValueFrom(
-        this.microserviceUserClient.send('get-all-student', ''),
-      );
-      studentList = studentList.map((item) => {
-        Object.assign(item.user, item.user.student);
-        delete item.user.student;
-        Object.assign(item, item.user);
-        delete item.user;
-        return item;
-      });
-      console.log(studentList);
-      return {
-        status: 'success',
-        message: '查询所有学生成功',
-        data: {
-          studentList,
-        },
-      };
-    } catch (error) {
-      return {
-        status: 'failure',
-        message: `查询所有用户失败${error.message}`,
-      };
-    }
-  }
+  //更新用户信息
   async updateUserInfo(username: string, attribute: string, newValue: string) {
     const userInfo = await firstValueFrom(
       this.microserviceUserClient.send('update-user-info', {

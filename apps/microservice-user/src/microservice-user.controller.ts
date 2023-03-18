@@ -3,8 +3,6 @@ import { Controller } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { UserRegisterDto } from 'public/dto/user/user-register.dto';
 import { UploadFileService } from '../../../libs/upload-file/src/upload-file.service';
-import e from 'express';
-import { RegisterMicroserviceModule } from '../../../libs/register-microservice/src/register-microservice.module';
 
 @Controller()
 export class MicroserviceUserController {
@@ -51,6 +49,33 @@ export class MicroserviceUserController {
     } catch (error) {
       return Promise.reject(error.message);
     }
+  }
+  //判断用户是否是管理员
+  @MessagePattern('is-user-admin')
+  async isUserAdmin(username: string) {
+    const roles = await this.getAllRoleByUsername(username);
+    const roleList = roles.map((item) => {
+      return item.roleName;
+    });
+    return roleList.includes('管理员');
+  }
+  //判断用户是否是教师
+  @MessagePattern('is-user-teacher')
+  async isUserTeacher(username: string) {
+    const roles = await this.getAllRoleByUsername(username);
+    const roleList = roles.map((item) => {
+      return item.roleName;
+    });
+    return roleList.includes('教师');
+  }
+  //判断用户是否是学生
+  @MessagePattern('is-user-student')
+  async isUserStudent(username: string) {
+    const roles = await this.getAllRoleByUsername(username);
+    const roleList = roles.map((item) => {
+      return item.roleName;
+    });
+    return roleList.includes('学生');
   }
   //创建账户
   @MessagePattern('post')
@@ -158,29 +183,78 @@ export class MicroserviceUserController {
     console.log(responseData);
     return responseData;
   }
-
-  //获取所有学生
-  @MessagePattern('get-all-student')
-  async getAllStudent() {
-    return await this.prismaClient.student.findMany({
-      include: {
-        user: {
-          select: {
-            student: true,
-            address: true,
-            avatar: true,
-            email: true,
-            nickname: true,
-            createAt: true,
-            password: true,
-            realName: true,
-            age: true,
-            school: true,
-            userId: true,
-            username: true,
-            updateAt: true,
+  //给指定用户添加角色
+  @MessagePattern('add-role-for-user')
+  async addRoleForUser(privilegeInfo: { username: string; roleName: string }) {
+    if (privilegeInfo.roleName === '教师') {
+      await this.prismaClient.teacher.create({
+        data: {
+          user: {
+            connect: {
+              username: privilegeInfo.username,
+            },
           },
         },
+      });
+    }
+    if (privilegeInfo.roleName === '学生') {
+      await this.prismaClient.student.create({
+        data: {
+          user: {
+            connect: {
+              username: privilegeInfo.username,
+            },
+          },
+        },
+      });
+    }
+    return await this.prismaClient.roleToUser.create({
+      data: {
+        role: {
+          connect: {
+            roleName: privilegeInfo.roleName,
+          },
+        },
+        user: {
+          connect: {
+            username: privilegeInfo.username,
+          },
+        },
+      },
+    });
+  }
+  //删除某用户的某角色
+  @MessagePattern('delete-role-from-user')
+  async deleteRoleFromUser(deleteInfo: { username: string; roleName: string }) {
+    if (deleteInfo.roleName === '教师') {
+      await this.prismaClient.teacher.delete({
+        where: {
+          username: deleteInfo.username,
+        },
+      });
+    }
+    if (deleteInfo.roleName === '学生') {
+      await this.prismaClient.student.delete({
+        where: {
+          username: deleteInfo.username,
+        },
+      });
+    }
+    return await this.prismaClient.roleToUser.delete({
+      where: {
+        username_roleName: {
+          roleName: deleteInfo.roleName,
+          username: deleteInfo.username,
+        },
+      },
+    });
+  }
+  //删除用户
+  @MessagePattern('delete-user')
+  async deleteUser(username: string) {
+    return this.prismaClient.user.delete({
+      where: {
+        username,
       },
     });
   }
