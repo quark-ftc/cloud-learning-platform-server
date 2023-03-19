@@ -141,7 +141,6 @@ export class AuthService {
       const rolesList = roles.map((item) => {
         return item.roleName;
       });
-      console.log(rolesList);
       //循环遍历结果数组，获取每个角色对应的菜单信息。
       const menuData = await firstValueFrom(
         this.microserviceRoleClient.send('get:menus', rolesList),
@@ -155,7 +154,6 @@ export class AuthService {
           nonDuplicateMenuData.push(item);
         }
       });
-
       console.log(nonDuplicateMenuData);
       return {
         status: 'success',

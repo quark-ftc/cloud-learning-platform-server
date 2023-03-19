@@ -42,12 +42,16 @@ export class MicroserviceRoleController {
    */
   @MessagePattern('get:menus')
   async getMenusByRoleName(roleList) {
+    console.log('------------------roleList--------------');
+    console.log(roleList);
+    console.log('-------------------roleList----------------');
     let list = [];
+
     //循环遍历每一个角色的菜单权限
     for (const item of roleList) {
       const result = await this.prismaClient.menuToRole.findMany({
         where: {
-          roleName: item.roleName,
+          roleName: item,
         },
         include: {
           menu: {
@@ -60,6 +64,9 @@ export class MicroserviceRoleController {
           },
         },
       });
+      console.log('--------------------------result----------------------');
+      console.log(result);
+      console.log('--------------------------result---------------');
       console.log(result);
       list = list.concat(result);
     }
