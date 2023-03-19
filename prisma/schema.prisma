@@ -151,7 +151,7 @@ model PurchasedCourse {
 model Class {
   classId          String           @id @default(uuid()) @map("class_id")
   createdTeacher   String           @map("created_teacher")
-  teacher          Teacher          @relation(fields: [createdTeacher], references: [username])
+  teacher          Teacher          @relation(fields: [createdTeacher], references: [username], onDelete: Cascade, onUpdate: Cascade)
   className        String           @unique //班级名称
   classNumber      Int              @unique @default(autoincrement()) @map("class_number")
   classDescription String?          @map("class_description")
@@ -163,9 +163,9 @@ model Class {
 }
 
 model ClassToStudent {
-  studentUsername String   @unique @map("student_username")
+  studentUsername String   @map("student_username")
   student         Student  @relation(fields: [studentUsername], references: [username], onDelete: Cascade, onUpdate: Cascade)
-  className       String   @unique @map("class_name")
+  className       String   @map("class_name")
   class           Class    @relation(fields: [className], references: [className], onDelete: Cascade, onUpdate: Cascade)
   createAt        DateTime @default(now()) @map("create_at")
   updateAt        DateTime @default(now()) @updatedAt @map("update_at")
