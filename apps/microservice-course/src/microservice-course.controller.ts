@@ -96,6 +96,20 @@ export class MicroserviceCourseController {
   async findAllCourse() {
     return this.prismaClient.course.findMany();
   }
+  //获取课程的分页列表
+  @MessagePattern('get-paging-list')
+  async getCoursePagingList(pagingInfo: { skip: number; take: number }) {
+    return this.prismaClient.course.findMany({
+      skip: pagingInfo.skip,
+      take: pagingInfo.take,
+    });
+  }
+
+  //查询课程总数
+  @MessagePattern('get-course-count')
+  async getUserCount() {
+    return await this.prismaClient.course.count();
+  }
   //添加课程到购物车
   @MessagePattern('add-course-to-shopping-cart')
   async addCourseToShoppingCart(addShoppingCartInfo: {

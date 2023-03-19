@@ -122,7 +122,7 @@ export class MicroserviceUserController {
       return Promise.reject(`创建账户失败：${error.message}`);
     }
   }
-  //根据分页信息获取数据
+  //根据分页信息获取用户数据
   @MessagePattern('user-paging-list')
   async getUserPagingList(pagingInfo) {
     console.log('-------------------------');

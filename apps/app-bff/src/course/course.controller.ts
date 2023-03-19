@@ -26,14 +26,30 @@ export class CourseController {
     @Inject('microserviceUserClient')
     private readonly microserviceUserClient: ClientProxy,
   ) {}
-  //获取全部的课程列表
+  //获取全部(分页)课程列表
   @UseGuards(AuthGuard('jwtStrategy'))
   @Post('get-course-list')
-  async getCourseList(@Request() { user: { username } }, @Body() { category }) {
+  async getCourseList(
+    @Request() { user: { username } },
+    @Body() { category, skip, take },
+  ) {
     try {
-      let courseList = await firstValueFrom(
-        this.microserviceCourseClient.send('find-all-course', ''),
+      let courseList = null;
+      const total = await firstValueFrom(
+        this.microserviceCourseClient.send('get-course-count', ''),
       );
+      if (skip !== undefined && take !== undefined) {
+        courseList = await firstValueFrom(
+          this.microserviceCourseClient.send('get-paging-list', {
+            skip: +skip,
+            take: +take,
+          }),
+        );
+      } else {
+        courseList = await firstValueFrom(
+          this.microserviceCourseClient.send('find-all-course', ''),
+        );
+      }
       if (category) {
         console.log(category);
         courseList = courseList.filter((item) => {
@@ -76,11 +92,13 @@ export class CourseController {
         });
         console.log(orderList);
       }
+
       return {
         status: 'success',
         message: '获取用户列表成功',
         data: {
           courseList,
+          total,
         },
       };
     } catch (error) {
@@ -90,7 +108,6 @@ export class CourseController {
       };
     }
   }
-
   //将课程加入到购物车
   @Post('add-course-to-shopping-cart')
   @UseGuards(AuthGuard('jwtStrategy'))
@@ -164,7 +181,6 @@ export class CourseController {
   }
   //将订单从购物车删除
 
-  
   @UseGuards(AuthGuard('jwtStrategy'))
   @Post('delete-course-from-shopping-cart')
   async deleteCourseFromShoppingCart(
