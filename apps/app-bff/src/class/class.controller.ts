@@ -3,6 +3,7 @@ import {
   Controller,
   Inject,
   Post,
+  Req,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -37,6 +38,7 @@ export class ClassController {
       roleList = roleList.map((item) => {
         return item.roleName;
       });
+      console.log(roleList);
       if (!roleList.includes('教师')) {
         return {
           status: 'failure',
@@ -299,6 +301,34 @@ export class ClassController {
       return {
         status: 'failure',
         message: `学生 ${username}退出班级${className}失败：${error.message}`,
+      };
+    }
+  }
+  //获取学生所在所有班级列表
+  @UseGuards(AuthGuard('jwtStrategy'))
+  @Post('get-all-class-which-student-in')
+  async getAllClassWhichStudentIn(@Request() { user: { username } }) {
+    try {
+      let classList = await firstValueFrom(
+        this.microserviceClassClient.send(
+          'get-all-class-which-student-in',
+          username,
+        ),
+      );
+      classList = classList.map((item) => {
+        return item.class;
+      });
+      return {
+        status: 'success',
+        message: `查询用户 ${username}所在的所有班级成功`,
+        data: {
+          classList,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 'failure',
+        message: `查询用户 ${username}所在的所有班级失败：${error.message}`,
       };
     }
   }

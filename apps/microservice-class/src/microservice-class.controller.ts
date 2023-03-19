@@ -211,4 +211,26 @@ export class MicroserviceClassController {
       },
     });
   }
+  //获取学生所属的所有班级列表
+  @MessagePattern('get-all-class-which-student-in')
+  async getAllClassWhichStudentIn(studentUsername: string) {
+    return await this.prismaClient.classToStudent.findMany({
+      where: {
+        studentUsername,
+      },
+      include: {
+        class: {
+          select: {
+            classDescription: true,
+            className: true,
+            createdTeacher: true,
+            classId: true,
+            classNumber: true,
+            createAt: true,
+            updateAt: true,
+          },
+        },
+      },
+    });
+  }
 }
