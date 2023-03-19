@@ -183,7 +183,7 @@ export class MicroserviceClassController {
     console.log(deleteInfo);
     return await this.prismaClient.classToStudent.delete({
       where: {
-        studentUsername_className: {
+        studentUsernameAndclassName: {
           className: deleteInfo.className,
           studentUsername: deleteInfo.username,
         },
