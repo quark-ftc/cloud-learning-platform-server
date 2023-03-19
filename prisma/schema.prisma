@@ -170,6 +170,6 @@ model ClassToStudent {
   createAt        DateTime @default(now()) @map("create_at")
   updateAt        DateTime @default(now()) @updatedAt @map("update_at")
 
-  @@unique([studentUsername, className], name: "studentUsernameAndclassName")
+  @@unique([studentUsername, className], name: "studentUsernameAndClassName")
   @@map("class_to_student")
 }

@@ -89,9 +89,9 @@ export class MicroserviceClassController {
   async isStudentInClass(findInfo: { username: string; className: string }) {
     const result = await this.prismaClient.classToStudent.findUnique({
       where: {
-        studentUsername_className: {
-          studentUsername: findInfo.username,
+        studentUsernameAndClassName: {
           className: findInfo.className,
+          studentUsername: findInfo.username,
         },
       },
     });
@@ -183,7 +183,7 @@ export class MicroserviceClassController {
     console.log(deleteInfo);
     return await this.prismaClient.classToStudent.delete({
       where: {
-        studentUsernameAndclassName: {
+        studentUsernameAndClassName: {
           className: deleteInfo.className,
           studentUsername: deleteInfo.username,
         },
