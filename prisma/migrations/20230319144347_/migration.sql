@@ -87,13 +87,13 @@ CREATE TABLE `menu_to_role` (
 CREATE TABLE `course` (
     `course_id` VARCHAR(191) NOT NULL,
     `course_name` VARCHAR(191) NOT NULL,
-    `course_Description` VARCHAR(191) NULL,
+    `course_description` VARCHAR(191) NULL,
     `course_cover` VARCHAR(191) NOT NULL,
     `course_video` VARCHAR(191) NOT NULL,
     `course_price` VARCHAR(191) NOT NULL,
     `course_grade` VARCHAR(191) NOT NULL,
     `course_state` VARCHAR(191) NOT NULL,
-    `course_categore` VARCHAR(191) NULL,
+    `course_category` VARCHAR(191) NULL,
     `create_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `update_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
@@ -144,52 +144,54 @@ CREATE TABLE `class` (
 
 -- CreateTable
 CREATE TABLE `class_to_student` (
-    `studentId` VARCHAR(191) NOT NULL,
-    `classId` VARCHAR(191) NOT NULL,
+    `id` VARCHAR(191) NOT NULL,
+    `student_username` VARCHAR(191) NOT NULL,
+    `class_name` VARCHAR(191) NOT NULL,
     `create_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `update_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
-    PRIMARY KEY (`classId`, `studentId`)
+    UNIQUE INDEX `class_to_student_student_username_class_name_key`(`student_username`, `class_name`),
+    PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `teacher` ADD CONSTRAINT `teacher_username_fkey` FOREIGN KEY (`username`) REFERENCES `user`(`username`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `teacher` ADD CONSTRAINT `teacher_username_fkey` FOREIGN KEY (`username`) REFERENCES `user`(`username`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `student` ADD CONSTRAINT `student_username_fkey` FOREIGN KEY (`username`) REFERENCES `user`(`username`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `student` ADD CONSTRAINT `student_username_fkey` FOREIGN KEY (`username`) REFERENCES `user`(`username`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `menu` ADD CONSTRAINT `menu_pid_fkey` FOREIGN KEY (`pid`) REFERENCES `menu`(`menu_id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `role_to_user` ADD CONSTRAINT `role_to_user_role_name_fkey` FOREIGN KEY (`role_name`) REFERENCES `role`(`role_name`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `role_to_user` ADD CONSTRAINT `role_to_user_role_name_fkey` FOREIGN KEY (`role_name`) REFERENCES `role`(`role_name`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `role_to_user` ADD CONSTRAINT `role_to_user_username_fkey` FOREIGN KEY (`username`) REFERENCES `user`(`username`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `role_to_user` ADD CONSTRAINT `role_to_user_username_fkey` FOREIGN KEY (`username`) REFERENCES `user`(`username`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `menu_to_role` ADD CONSTRAINT `menu_to_role_title_fkey` FOREIGN KEY (`title`) REFERENCES `menu`(`menu_title`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `menu_to_role` ADD CONSTRAINT `menu_to_role_title_fkey` FOREIGN KEY (`title`) REFERENCES `menu`(`menu_title`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `menu_to_role` ADD CONSTRAINT `menu_to_role_role_name_fkey` FOREIGN KEY (`role_name`) REFERENCES `role`(`role_name`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `menu_to_role` ADD CONSTRAINT `menu_to_role_role_name_fkey` FOREIGN KEY (`role_name`) REFERENCES `role`(`role_name`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `shopping_cart` ADD CONSTRAINT `shopping_cart_username_fkey` FOREIGN KEY (`username`) REFERENCES `user`(`username`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `shopping_cart` ADD CONSTRAINT `shopping_cart_username_fkey` FOREIGN KEY (`username`) REFERENCES `user`(`username`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `shopping_cart` ADD CONSTRAINT `shopping_cart_course_id_fkey` FOREIGN KEY (`course_id`) REFERENCES `course`(`course_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `shopping_cart` ADD CONSTRAINT `shopping_cart_course_id_fkey` FOREIGN KEY (`course_id`) REFERENCES `course`(`course_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `purchased_course` ADD CONSTRAINT `purchased_course_username_fkey` FOREIGN KEY (`username`) REFERENCES `user`(`username`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `purchased_course` ADD CONSTRAINT `purchased_course_username_fkey` FOREIGN KEY (`username`) REFERENCES `user`(`username`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `purchased_course` ADD CONSTRAINT `purchased_course_course_id_fkey` FOREIGN KEY (`course_id`) REFERENCES `course`(`course_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `purchased_course` ADD CONSTRAINT `purchased_course_course_id_fkey` FOREIGN KEY (`course_id`) REFERENCES `course`(`course_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `class` ADD CONSTRAINT `class_created_teacher_fkey` FOREIGN KEY (`created_teacher`) REFERENCES `teacher`(`username`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `class` ADD CONSTRAINT `class_created_teacher_fkey` FOREIGN KEY (`created_teacher`) REFERENCES `teacher`(`username`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `class_to_student` ADD CONSTRAINT `class_to_student_studentId_fkey` FOREIGN KEY (`studentId`) REFERENCES `student`(`student_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `class_to_student` ADD CONSTRAINT `class_to_student_student_username_fkey` FOREIGN KEY (`student_username`) REFERENCES `student`(`username`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `class_to_student` ADD CONSTRAINT `class_to_student_classId_fkey` FOREIGN KEY (`classId`) REFERENCES `class`(`class_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `class_to_student` ADD CONSTRAINT `class_to_student_class_name_fkey` FOREIGN KEY (`class_name`) REFERENCES `class`(`className`) ON DELETE CASCADE ON UPDATE CASCADE;

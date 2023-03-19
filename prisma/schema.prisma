@@ -163,6 +163,7 @@ model Class {
 }
 
 model ClassToStudent {
+  id              String   @id @default(uuid())
   studentUsername String   @map("student_username")
   student         Student  @relation(fields: [studentUsername], references: [username], onDelete: Cascade, onUpdate: Cascade)
   className       String   @map("class_name")

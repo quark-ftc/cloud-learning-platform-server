@@ -420,8 +420,28 @@ export class AuthController {
   //获取用户的全部角色
   @UseGuards(AuthGuard('jwtStrategy'))
   @Post('get-all-roles-of-user')
-  async getAllRolesOffUser(@Request() { user: { username } }) {
+  async getAllRolesOffUser(
+    @Request() { user: { username } },
+    @Body() { specifiedUsername },
+  ) {
     try {
+      /**
+       * 如果提供了specifiedUsername，则改接口查询specifiedUsername的所有权限。
+       * 在查specifiedUsername之前，需要判断当前登陆用户username是否有管理员权限。
+       *如果是查当前登陆用户的角色，则无需管理员权限
+       */
+      if (specifiedUsername !== undefined) {
+        if (
+          !(await firstValueFrom(
+            this.microserviceUserClient.send('is-user-admin', username),
+          ))
+        ) {
+          return {
+            message: `用户${username}不是管理员，无权查看指定用户 :${specifiedUsername}的权限`,
+          };
+        }
+        username = specifiedUsername;
+      }
       let roleList = await firstValueFrom(
         this.microserviceUserClient.send('get:username:role', username),
       );
@@ -431,7 +451,7 @@ export class AuthController {
       });
       return {
         status: 'success',
-        message: `获取用户信息全部角色成功`,
+        message: `获取用户${username}信息全部角色成功`,
         data: {
           roleList,
         },
