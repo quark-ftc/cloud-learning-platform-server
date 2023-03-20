@@ -580,4 +580,33 @@ export class CourseController {
       };
     }
   }
+  //更新新课程的文本信息
+  @UseGuards(AuthGuard('jwtStrategy'))
+  @Post('update-course-info')
+  async upDateCourseInfo(
+    @Request() { user: { username } },
+    @Body()
+    updateInfo: { courseName: string; attribute: string; newValue: string },
+  ) {
+    if (
+      !(await firstValueFrom(
+        this.microserviceUserClient.send('is-user-admin', username),
+      ))
+    ) {
+      return {
+        status: 'failure',
+        message: '您不是管理员，无权修改课程信息',
+      };
+    }
+    const updatedCourse = await firstValueFrom(
+      this.microserviceCourseClient.send('update-course-info', updateInfo),
+    );
+    return {
+      status: 'success',
+      message: `更新课程${updateInfo.courseName}的${updateInfo.attribute}为${updateInfo.newValue}成功}`,
+      data: {
+        updatedCourse,
+      },
+    };
+  }
 }

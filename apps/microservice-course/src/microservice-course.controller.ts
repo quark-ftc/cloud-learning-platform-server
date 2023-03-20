@@ -261,4 +261,20 @@ export class MicroserviceCourseController {
     });
     return orderList;
   }
+
+  @MessagePattern('update-course-info')
+  async updateCourseInfo(uploadInfo: {
+    courseName: string;
+    attribute: string;
+    newValue: string;
+  }) {
+    return this.prismaClient.course.update({
+      where: {
+        courseName: uploadInfo.courseName,
+      },
+      data: {
+        [uploadInfo.attribute]: uploadInfo.newValue,
+      },
+    });
+  }
 }
