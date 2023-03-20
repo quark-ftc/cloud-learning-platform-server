@@ -603,7 +603,7 @@ export class CourseController {
     );
     return {
       status: 'success',
-      message: `更新课程${updateInfo.courseName}的${updateInfo.attribute}为${updateInfo.newValue}成功}`,
+      message: `更新课程${updateInfo.courseName}的${updateInfo.attribute}为${updateInfo.newValue}成功`,
       data: {
         updatedCourse,
       },

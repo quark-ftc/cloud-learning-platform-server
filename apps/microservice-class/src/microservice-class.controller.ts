@@ -116,31 +116,39 @@ export class MicroserviceClassController {
       return false;
     }
   }
+  //TODO修复
   //查找一个班级的所有成员信息
   @MessagePattern('get-all-user-of-specified-class')
   async getAllUserOfSpecifiedClass(findInfo: {
     username: string;
     className: string;
   }) {
-    const students = await this.prismaClient.student.findMany({
+    const students = await this.prismaClient.classToStudent.findMany({
       include: {
-        user: {
-          select: {
-            address: true,
-            avatar: true,
-            email: true,
-            nickname: true,
-            realName: true,
-            age: true,
-            school: true,
+        student: {
+          include: {
+            user: {
+              select: {
+                username: true,
+                address: true,
+                age: true,
+                avatar: true,
+                email: true,
+                nickname: true,
+                realName: true,
+                school: true,
+                userId: true,
+              },
+            },
           },
         },
       },
     });
+    console.log(students);
     const studentList = students.map((item) => {
-      Object.assign(item, item.user);
-      delete item.user;
-      return item;
+      // Object.assign(item, item.user);
+      // delete item.user;
+      return item.student.user;
     });
     const teacher = await this.prismaClient.class.findFirst({
       where: {
