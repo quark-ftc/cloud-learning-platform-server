@@ -119,11 +119,11 @@ export class MicroserviceClassController {
   //TODO修复
   //查找一个班级的所有成员信息
   @MessagePattern('get-all-user-of-specified-class')
-  async getAllUserOfSpecifiedClass(findInfo: {
-    username: string;
-    className: string;
-  }) {
+  async getAllUserOfSpecifiedClass(className: string) {
     const students = await this.prismaClient.classToStudent.findMany({
+      where: {
+        className: className,
+      },
       include: {
         student: {
           include: {
@@ -152,7 +152,7 @@ export class MicroserviceClassController {
     });
     const teacher = await this.prismaClient.class.findFirst({
       where: {
-        className: findInfo.className,
+        className: className,
       },
       include: {
         teacher: {

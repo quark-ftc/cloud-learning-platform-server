@@ -361,11 +361,16 @@ export class ClassController {
         };
       }
       const classMemberList = await firstValueFrom(
-        this.microserviceClassClient.send('get-all-user-of-specified-class', {
+        this.microserviceClassClient.send(
+          'get-all-user-of-specified-class',
           className,
-          username,
-        }),
+        ),
       );
+      console.log(
+        'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      );
+      console.log(classMemberList);
+      console.log('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb');
       return {
         status: 'success',
         message: '请求班级成员列表成功',
