@@ -19,9 +19,10 @@
 
 ### 微服务
 
-| 微服务名称          | 依赖注入名称             | 端口号 |
-| ------------------- | ------------------------ | ------ |
-| microservice-user   | microserviceUserClient   | 30000  |
-| microservice-role   | microserviceRoleClient   | 30001  |
-| microservice-course | microserviceCourseClient | 30002  |
-| microservice-class  | microserviceClassClient  | 30003  |
+| 微服务名称            | 依赖注入名称               | 端口号 |
+| --------------------- | -------------------------- | ------ |
+| microservice-user     | microserviceUserClient     | 30000  |
+| microservice-role     | microserviceRoleClient     | 30001  |
+| microservice-course   | microserviceCourseClient   | 30002  |
+| microservice-class    | microserviceClassClient    | 30003  |
+| microservice-homework | microserviceHomeworkClient | 30004  |

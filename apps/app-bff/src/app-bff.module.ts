@@ -6,6 +6,7 @@ import { RegisterMicroserviceModule } from '../../../libs/register-microservice/
 import { ConfigModule } from '@nestjs/config';
 import { ClassModule } from './class/class.module';
 import { CourseModule } from './course/course.module';
+import { HomeworkModule } from './homework/homework.module';
 @Module({
   imports: [
     AuthModule,
@@ -15,6 +16,7 @@ import { CourseModule } from './course/course.module';
     }),
     ClassModule,
     CourseModule,
+    HomeworkModule,
   ],
   controllers: [AppBffController],
   providers: [AppBffService],

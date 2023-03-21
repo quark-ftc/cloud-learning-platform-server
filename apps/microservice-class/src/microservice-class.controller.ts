@@ -116,7 +116,6 @@ export class MicroserviceClassController {
       return false;
     }
   }
-  //TODO修复
   //查找一个班级的所有成员信息
   @MessagePattern('get-all-user-of-specified-class')
   async getAllUserOfSpecifiedClass(className: string) {

@@ -33,19 +33,21 @@ model User {
 }
 
 model Teacher {
-  teacherId String  @id @default(uuid()) @map("teacher_id")
-  username  String  @unique
-  user      User    @relation(fields: [username], references: [username], onDelete: Cascade, onUpdate: Cascade)
+  teacherId String     @id @default(uuid()) @map("teacher_id")
+  username  String     @unique
+  user      User       @relation(fields: [username], references: [username], onDelete: Cascade, onUpdate: Cascade)
   classes   Class[]
+  homeworks Homework[]
 
   @@map("teacher")
 }
 
 model Student {
-  studentId String           @id @default(uuid()) @map("student_id")
-  username  String           @unique
-  user      User             @relation(fields: [username], references: [username], onDelete: Cascade, onUpdate: Cascade)
+  studentId String              @id @default(uuid()) @map("student_id")
+  username  String              @unique
+  user      User                @relation(fields: [username], references: [username], onDelete: Cascade, onUpdate: Cascade)
   classes   ClassToStudent[]
+  homework  StudentToHomeWork[]
 
   @@map("student")
 }
@@ -158,6 +160,7 @@ model Class {
   students         ClassToStudent[]
   createAt         DateTime         @default(now()) @map("create_at")
   updateAt         DateTime         @default(now()) @updatedAt @map("update_at")
+  homework         Homework[]
 
   @@map("class")
 }
@@ -173,4 +176,41 @@ model ClassToStudent {
 
   @@unique([studentUsername, className], name: "studentUsernameAndClassName")
   @@map("class_to_student")
+}
+
+model Homework {
+  homeworkId       String   @id @default(uuid()) @map("homework_id")
+  homeworkName     String   @map("homework_name") //作业的名称
+  descriptionText  String
+  descriptionImage String?
+  createAt         DateTime @default(now()) @map("create_at")
+  updateAt         DateTime @default(now()) @updatedAt @map("update_at")
+  deadline         DateTime
+  posingTeacher    String   @map("posted_teacher")
+  teacher          Teacher  @relation(fields: [posingTeacher], references: [username], onDelete: Cascade, onUpdate: Cascade)
+  homeworkType     String
+  belongedClass    String   @map("belonged_class")
+  class            Class    @relation(fields: [belongedClass], references: [className], onDelete: Cascade, onUpdate: Cascade)
+
+  student StudentToHomeWork[]
+
+  @@unique([homeworkName, belongedClass], name: "homeworkNameAndBelongedClass")
+  @@map("homework")
+}
+
+model StudentToHomeWork {
+  id                    String   @id @default(uuid())
+  studentUsername       String   @map("student_username")
+  student               Student  @relation(fields: [studentUsername], references: [username])
+  homeworkName          String   @map("homework_name")
+  homeworkBelongedClass String   @map("homework_belonged_class")
+  homework              Homework @relation(fields: [homeworkName, homeworkBelongedClass], references: [homeworkName, belongedClass])
+  homeworkImage         String   @map("homework_image")
+  AIEvaluation          Json?    @map("ai_evaluation")
+  teacherComment        String?  @map("teacher_comment")
+  createAt              DateTime @default(now()) @map("create_at")
+  updateAt              DateTime @default(now()) @updatedAt @map("update_at")
+
+  @@unique([studentUsername, homeworkBelongedClass, homeworkName], name: "studentUsernameAndHomeworkBelongedAndClassHomeworkName")
+  @@map("student_to_homework")
 }

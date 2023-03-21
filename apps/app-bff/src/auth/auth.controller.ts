@@ -145,7 +145,8 @@ export class AuthController {
       //在上传之前，先删掉已有的图片
       const currentAvatar = user.avatar;
       if (currentAvatar) {
-        const start = currentAvatar.indexOf('/');
+        //跳过前面的https：//前缀
+        const start = currentAvatar.indexOf('/', 8);
         const key = currentAvatar.slice(start, currentAvatar.length);
         await this.authService.deleteUserAvatar(key); //删除成功或者文件不存在则返回204或200
       }
