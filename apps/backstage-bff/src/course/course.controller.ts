@@ -37,7 +37,7 @@ export class CourseController {
       {
         storage: diskStorage({
           destination(req, file, callback) {
-            let filePath = 'uploadCatch/courseDest/';
+            let filePath = 'uploadCache/courseDest/';
             if (file.fieldname == 'courseVideo') {
               filePath += 'video';
             }

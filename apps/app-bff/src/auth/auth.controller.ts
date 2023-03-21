@@ -123,7 +123,7 @@ export class AuthController {
     FileInterceptor('avatar', {
       storage: diskStorage({
         destination(req, file, callback) {
-          const filePath = 'uploadCatch/avatar';
+          const filePath = 'uploadCache/avatar';
           //判断文件夹是否存在，不存在则自动生成
           if (!fs.existsSync(filePath)) {
             fs.mkdirSync(filePath, { recursive: true, mode: '777' });
