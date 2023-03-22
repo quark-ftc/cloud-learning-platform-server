@@ -412,6 +412,25 @@ export class HomeworkController {
             submittedHomework,
           },
         };
+      } else {
+        const submittedHomework = await firstValueFrom(
+          this.microserviceHomeworkClient.send(
+            'add-student-homework-submitted-info-to-db',
+            {
+              homeworkName: homeworkName,
+              homeworkBelongedClass: homeworkBelongedClass,
+              homeworkImage: homeworkImageUrl,
+              studentName: username,
+            },
+          ),
+        );
+        return {
+          status: 'success',
+          message: `学生${username}的${homeworkName}作业提交成功`,
+          data: {
+            submittedHomework,
+          },
+        };
       }
     } catch (error) {
       return {
