@@ -209,12 +209,10 @@ export class HomeworkController {
         }),
       );
       return {
-        message: {
-          status: 'success',
-          message: `删除${deleteInfo.className}班的${deleteInfo.homeworkName}作业成功`,
-          data: {
-            deletedHomework,
-          },
+        status: 'success',
+        message: `删除${deleteInfo.className}班的${deleteInfo.homeworkName}作业成功`,
+        data: {
+          deletedHomework,
         },
       };
     } catch (error) {
