@@ -196,7 +196,7 @@ export class HomeworkController {
         //跳过前面的https：//前缀
         const start = existedHomework.descriptionImage.indexOf('/', 8);
         const key = existedHomework.descriptionImage.slice(
-          start,
+          start + 1,
           existedHomework.descriptionImage.length,
         );
         console.log(key);

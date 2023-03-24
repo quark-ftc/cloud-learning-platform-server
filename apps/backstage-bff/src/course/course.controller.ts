@@ -144,6 +144,74 @@ export class CourseController {
       };
     }
   }
+  //删除课程
+  @Post('delete')
+  @UseGuards(AuthGuard('jwtStrategy'))
+  async deleteCourse(
+    @Request() { user: { username } },
+    @Body() { courseName },
+  ) {
+    try {
+      //判断用户是否是管理员
+      if (
+        !(await firstValueFrom(
+          this.microserviceUserClient.send('is-user-admin', username),
+        ))
+      ) {
+        return {
+          status: 'failure',
+          message: `用户${username}不是管理员，无权删除课程`,
+        };
+      }
+      //通过课程名称查找课程
+      console.log(courseName);
+      const course = await firstValueFrom(
+        this.microserviceCourseClient.send(
+          'get-course-by-course-name',
+          courseName,
+        ),
+      );
+      //通过课程名称的url获取cover和video的key
+      console.log(course);
+      const courseVideoKeyStart = course.courseVideo.indexOf('/', 8);
+      const courseVideoKey = course.courseVideo.slice(
+        courseVideoKeyStart + 1,
+        course.courseVideo.length,
+      );
+      const courseCoverKeyStart = course.courseCover.indexOf('/', 8);
+      const courseCoverKey = course.courseCover.slice(
+        courseCoverKeyStart + 1,
+        course.courseCover.length,
+      );
+      console.log(courseCoverKey);
+      console.log(courseVideoKey);
+      await firstValueFrom(
+        this.microserviceCourseClient.send('delete', courseCoverKey),
+      ).catch((error) => {
+        console.log('aaaaaaaaaaaa');
+        console.log(error);
+        console.log('nnnnnnnn');
+      });
+      console.log('a');
+      await firstValueFrom(
+        this.microserviceCourseClient.send('delete', courseVideoKey),
+      );
+      console.log('b');
+      await firstValueFrom(
+        this.microserviceCourseClient.send('delete-course', courseName),
+      );
+      console.log('c');
+      return {
+        status: 'success',
+        message: `删除课程 ${courseName}成功`,
+      };
+    } catch (error) {
+      return {
+        status: 'failure',
+        message: `删除课程 ${courseName}失败`,
+      };
+    }
+  }
   //获取全部课程(分页)列表
   @UseGuards(AuthGuard('jwtStrategy'))
   @Post('get-course-list')

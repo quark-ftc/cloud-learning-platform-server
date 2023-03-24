@@ -147,7 +147,7 @@ export class AuthController {
       if (currentAvatar) {
         //跳过前面的https：//前缀
         const start = currentAvatar.indexOf('/', 8);
-        const key = currentAvatar.slice(start, currentAvatar.length);
+        const key = currentAvatar.slice(start + 1, currentAvatar.length);
         await this.authService.deleteUserAvatar(key); //删除成功或者文件不存在则返回204或200
       }
       const key = generateFileUploadKey(avatar.originalname);

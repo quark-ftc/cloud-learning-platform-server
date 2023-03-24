@@ -35,6 +35,7 @@ export class MicroserviceCourseController {
   @MessagePattern('delete')
   async delete(key: string) {
     const responseData = await this.uploadFileService.delete(key);
+    return responseData;
     console.log(responseData);
   }
   //将课程信息写入数据库
@@ -69,6 +70,15 @@ export class MicroserviceCourseController {
         courseState: true,
         courseVideo: true,
         courseCategory: true,
+      },
+    });
+  }
+  //将课程信息从数据库删除
+  @MessagePattern('delete-course')
+  async deleteCourse(courseName: string) {
+    return this.prismaClient.course.delete({
+      where: {
+        courseName,
       },
     });
   }
