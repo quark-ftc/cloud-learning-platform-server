@@ -204,7 +204,7 @@ model StudentToHomeWork {
   student               Student  @relation(fields: [studentUsername], references: [username])
   homeworkName          String   @map("homework_name")
   homeworkBelongedClass String   @map("homework_belonged_class")
-  homework              Homework @relation(fields: [homeworkName, homeworkBelongedClass], references: [homeworkName, belongedClass])
+  homework              Homework @relation(fields: [homeworkName, homeworkBelongedClass], references: [homeworkName, belongedClass],onDelete: Cascade, onUpdate: Cascade)
   homeworkImage         String   @map("homework_image")
   AIEvaluation          Json?    @map("ai_evaluation")
   teacherComment        String?  @map("teacher_comment")
