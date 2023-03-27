@@ -40,6 +40,13 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
           port: 30004,
         },
       },
+      {
+        name: 'microserviceSystemClient',
+        transport: Transport.TCP,
+        options: {
+          port: 30005,
+        },
+      },
     ]),
   ],
   providers: [],

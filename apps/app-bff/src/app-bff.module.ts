@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ClassModule } from './class/class.module';
 import { CourseModule } from './course/course.module';
 import { HomeworkModule } from './homework/homework.module';
+import { SystemModule } from './system/system.module';
 @Module({
   imports: [
     AuthModule,
@@ -17,6 +18,7 @@ import { HomeworkModule } from './homework/homework.module';
     ClassModule,
     CourseModule,
     HomeworkModule,
+    SystemModule,
   ],
   controllers: [AppBffController],
   providers: [AppBffService],

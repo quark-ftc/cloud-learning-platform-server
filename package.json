@@ -12,7 +12,7 @@
     "build": "nest build",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
-    "start:dev": "concurrently --kill-others \"nest start app-bff --watch\" \"nest start backstage-bff --watch\" \"nest start microservice-user --watch\" \"nest start microservice-role --watch\" \"nest start microservice-course --watch\" \"nest start microservice-class --watch\" \"nest start microservice-homework --watch\"",
+    "start:dev": "concurrently --kill-others \"nest start app-bff --watch\" \"nest start backstage-bff --watch\" \"nest start microservice-user --watch\" \"nest start microservice-role --watch\" \"nest start microservice-course --watch\" \"nest start microservice-class --watch\" \"nest start microservice-homework --watch\" \"nest start microservice-system --watch\"",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/apps/cloud-learning-platform-server/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",

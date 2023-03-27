@@ -26,3 +26,4 @@
 | microservice-course   | microserviceCourseClient   | 30002  |
 | microservice-class    | microserviceClassClient    | 30003  |
 | microservice-homework | microserviceHomeworkClient | 30004  |
+| microservice-system   | microserviceSystemClient   | 30005  |

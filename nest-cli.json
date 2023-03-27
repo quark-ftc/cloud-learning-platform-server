@@ -108,6 +108,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/microservice-homework/tsconfig.app.json"
       }
+    },
+    "microservice-system": {
+      "type": "application",
+      "root": "apps/microservice-system",
+      "entryFile": "main",
+      "sourceRoot": "apps/microservice-system/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/microservice-system/tsconfig.app.json"
+      }
     }
   }
 }
