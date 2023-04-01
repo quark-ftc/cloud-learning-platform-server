@@ -25,7 +25,6 @@ export class SystemController {
           serverMonitorDate: result,
         },
       };
-      return result;
     } catch (error) {
       return {
         status: 'failure',

@@ -23,6 +23,7 @@ export class MicroserviceSystemService {
   private params = {
     Namespace: 'QCE/LIGHTHOUSE',
     MetricName: '',
+    Period: 300,
     Instances: [
       {
         Dimensions: [

@@ -154,7 +154,7 @@ model Class {
   classId          String           @id @default(uuid()) @map("class_id")
   createdTeacher   String           @map("created_teacher")
   teacher          Teacher          @relation(fields: [createdTeacher], references: [username], onDelete: Cascade, onUpdate: Cascade)
-  className        String           @unique //班级名称
+  className        String           @unique @map("class_name")
   classNumber      Int              @unique @default(autoincrement()) @map("class_number")
   classDescription String?          @map("class_description")
   students         ClassToStudent[]
@@ -181,14 +181,14 @@ model ClassToStudent {
 model Homework {
   homeworkId       String   @id @default(uuid()) @map("homework_id")
   homeworkName     String   @map("homework_name") //作业的名称
-  descriptionText  String
-  descriptionImage String?
+  descriptionText  String   @map("description_text")
+  descriptionImage String?  @map("description_image")
   createAt         DateTime @default(now()) @map("create_at")
   updateAt         DateTime @default(now()) @updatedAt @map("update_at")
   deadline         DateTime
   posingTeacher    String   @map("posted_teacher")
   teacher          Teacher  @relation(fields: [posingTeacher], references: [username], onDelete: Cascade, onUpdate: Cascade)
-  homeworkType     String
+  homeworkType     String   @map("homework_type")
   belongedClass    String   @map("belonged_class")
   class            Class    @relation(fields: [belongedClass], references: [className], onDelete: Cascade, onUpdate: Cascade)
 

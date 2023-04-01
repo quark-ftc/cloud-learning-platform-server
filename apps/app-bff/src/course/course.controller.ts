@@ -210,7 +210,7 @@ export class CourseController {
         }),
       );
       return {
-        status: '删除课程成功',
+        status: 'success',
         message: `以成功将${courseId}从${username}的购物车中删除`,
       };
     } catch (error) {
